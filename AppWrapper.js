@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {Provider} from 'react-redux';
+import {Provider, useSelector} from 'react-redux';
 import App from './App';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
@@ -17,6 +17,7 @@ import {
     DefaultTheme as PaperDefaultTheme,
     DarkTheme as PaperDarkTheme
 } from 'react-native-paper';
+import Loader from './component/Loader';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -41,6 +42,7 @@ const CustomDefaultTheme = {
 const theme = CustomDefaultTheme;
 
 const AppWrapper = () => {
+
     const [isSplashScreen, setIsSplashScreen] = useState(false)
 
     setTimeout(() => {
@@ -51,7 +53,7 @@ const AppWrapper = () => {
     return (
         <PaperProvider theme={theme}>
             <Provider store={store}>
-                {isSplashScreen && <App/>}
+                {isSplashScreen && (<App/>)}
             </Provider>
         </PaperProvider>
     );

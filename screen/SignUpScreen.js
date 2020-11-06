@@ -639,7 +639,16 @@ const styles = StyleSheet.create({
         backgroundColor:'#013476',
         alignItems: 'center',
         // height:60,
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+
+        elevation: 5
     },
     signIn: {
         width: '100%',

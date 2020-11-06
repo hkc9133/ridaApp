@@ -44,7 +44,12 @@ const LoginScreen = ({navigation}) => {
 
     const { colors } = useTheme();
     useEffect(() => {
-        console.log("흠")
+        // AsyncStorage.getItem("userId").then((userId) => {
+        //     setData({
+        //         ...data,
+        //         userId:userId
+        //     });
+        // })
     },[])
 
     React.useLayoutEffect(() => {
@@ -104,20 +109,36 @@ const LoginScreen = ({navigation}) => {
         }
     }
 
-    // const loginHandle = (loginData) => {
-    //     dispatch(login(loginData));
-    // }
+    const loginHandle = (loginData) => {
+        if(data.isValidUser && data.isValidPassword){
+            AsyncStorage.removeItem('companyId');
+            saveId();
+            dispatch(login(loginData));
+        }
+    }
 
-    const loginHandle = useCallback(
-        (loginData) => {
-            if(data.isValidUser && data.isValidPassword){
-                dispatch(login(loginData));
+    // const loginHandle = useCallback(
+    //     (loginData) => {
+    //         if(data.isValidUser && data.isValidPassword){
+    //             AsyncStorage.removeItem('companyId');
+    //             saveId();
+    //             dispatch(login(loginData));
+    //         }
+    //     },
+    //     [user],
+    // );
+
+
+    async function saveId() {
+        try {
+            if(isIdSave){
+                await AsyncStorage.setItem('userId',data.userId);
+            }else{
+                await AsyncStorage.removeItem('userId');
             }
-        },
-        [user],
-    );
-
-
+        } catch (error) {
+        }
+    }
 
 
 
@@ -143,8 +164,8 @@ const LoginScreen = ({navigation}) => {
                 {/*    color: colors.text*/}
                 {/*}]}>Username</Text>*/}
                 <View style={[styles.action,{marginTop:70}]}>
-                    <FontAwesome
-                        name="user-o"
+                    <Feather
+                        name="user"
                         color={colors.text}
                         size={20}
                         style={styles.icon}
@@ -375,7 +396,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth:0.5,
-        borderColor: '#919191'
+        borderColor: '#919191',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+
+        elevation: 5
     },
     textSign: {
         fontSize: 18,

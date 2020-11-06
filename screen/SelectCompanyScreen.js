@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import {
     Platform,
     SafeAreaView,
@@ -17,34 +17,36 @@ import Feather from 'react-native-vector-icons/Feather';
 import {CheckBox} from 'react-native-elements';
 import {useTheme} from 'react-native-paper';
 import Dialog from "react-native-dialog";
+import Loader from '../component/Loader';
+import {useDispatch, useSelector} from 'react-redux';
+import {getCompanyList,selectCompany} from '../store/company/company';
+// import {selectCompany} from '../store/company/company';
+import CompanyListItem from '../component/compnay/CompanyListItem';
 // import Prompt from "../util/Prompt";
 
 const SelectCompanyScreen = () => {
+
+    const dispatch = useDispatch();
+
+    const {company,companyLoading} = useSelector(({company,loading}) =>({
+        company:company,
+        companyLoading:loading['company/GET_COMPANY_LIST']
+    }))
 
     const { colors } = useTheme();
 
     const [showCompanyJoin,setShowCompanyJoin] = useState(false);
     const [joinCode,setJoinCode] = useState("");
 
+    useEffect(() => {
+        dispatch(getCompanyList());
+    },[])
+
+    useEffect(() => {
+        console.log(company)
+    },[company])
+
     const handleJoinCompany = () => {
-        Alert.prompt(
-            '직장 합류',
-            '합류코드는 관라자에게서 받은 초대 이메일/문자메세지에서 찾을 수 있습니다. 초대 이메일,문자메시지를 받지 못했으면, 관리자에게 문의하세요',
-            [
-                {
-                    text: '합류하기',
-                    onPress: () => console.log('Ask me later pressed')
-                },
-                {
-                    text: '취소',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel'
-                },
-            ],
-            "plain-text",
-            "ㅁㄴㅇ",
-            // {number},
-        );
     }
 
     const insertJoinCode = (value) =>{
@@ -54,17 +56,13 @@ const SelectCompanyScreen = () => {
         setShowCompanyJoin(true)
     }
 
-    const asd = () => {
-
-    }
-
-    // const handleJoinCompany = (value) => {
-    //     console.log(joinCode);
-    //     console.log("합류")
-    // }
-
     const handleJoinCompanyCancel = () => {
         setShowCompanyJoin(false)
+    }
+
+    const handleSelectCompany = (id) => {
+        console.log(id)
+        dispatch(selectCompany(id));
     }
 
     return (
@@ -73,7 +71,8 @@ const SelectCompanyScreen = () => {
             <View style={styles.container}>
             <StatusBar backgroundColor='#009387' barStyle="dark-content"/>
             <Animatable.View
-                animation="fadeInUpBig"
+                animation="fadeInUp"
+                // easing="ease-out"
                 style={[styles.footer, {
                     height:'100%',
                     minHeight:800
@@ -91,7 +90,33 @@ const SelectCompanyScreen = () => {
                         <Text style={{color:'#919191',fontSize:16}}>회사를 선택하거나 합류해주세요</Text>
                     </View>
                 </View>
-                <TouchableOpacity onPress={() => {handleJoinCompany();}}>
+                {company.company.list != null && (
+                    company.company.list.map((item) => (
+                        <CompanyListItem key={item.companyId} item={item} handleSelectCompany={handleSelectCompany}/>
+                    ))
+
+                )}
+                {/*{company.company.list.map((item) => (*/}
+                {/*    <TouchableOpacity onPress={() => {handleJoinCompanyShow();}}>*/}
+                {/*        <View style={{height:100,borderWidth:1.5,marginTop:25,flex:1,flexDirection:'row',padding:20,justifyContent: 'space-between'}}>*/}
+                {/*            <View style={{justifyContent: 'flex-start',alignItems:'baseline',alignSelf : "center"}}>*/}
+                {/*                <Text style={{fontSize:17,marginBottom:5}}>직장 합류하기</Text>*/}
+                {/*                <Text style={{color:'#919191'}}>합류코드를 이용하여 직원으로 합류합니다</Text>*/}
+                {/*            </View>*/}
+                {/*            <View style={{justifyContent: 'flex-end',alignSelf : "center"}}>*/}
+                {/*                <Feather*/}
+                {/*                    name="plus"*/}
+                {/*                    // color="grey"*/}
+                {/*                    size={25}*/}
+                {/*                    style={{textAlign:'right'}}*/}
+                {/*                />*/}
+                {/*            </View>*/}
+
+                {/*        </View>*/}
+                {/*    </TouchableOpacity>*/}
+                {/*))}*/}
+
+                <TouchableOpacity onPress={() => {handleJoinCompanyShow();}}>
                     <View style={{height:100,borderWidth:1.5,marginTop:25,flex:1,flexDirection:'row',padding:20,justifyContent: 'space-between'}}>
                         <View style={{justifyContent: 'flex-start',alignItems:'baseline',alignSelf : "center"}}>
                             <Text style={{fontSize:17,marginBottom:5}}>직장 합류하기</Text>
@@ -243,15 +268,15 @@ const SelectCompanyScreen = () => {
                 {/*        <Text style={[styles.bottomBottomText]}>비밀번호 재설정</Text>*/}
                 {/*    </TouchableOpacity>*/}
                 {/*</View>*/}
-                {/*<Dialog.Container visible={showCompanyJoin}>*/}
-                {/*    <Dialog.Title>직장 합류</Dialog.Title>*/}
-                {/*    <Dialog.Description>*/}
-                {/*        합류코드는 관라자에게서 받은 초대 이메일/문자메세지에서 찾을 수 있습니다. 초대 이메일,문자메시지를 받지 못했으면, 관리자에게 문의하세요 */}
-                {/*    </Dialog.Description>*/}
-                {/*    <Dialog.Button label="취소" onPress={handleJoinCompanyCancel} />*/}
-                {/*    <Dialog.Button label="합류하기" onPress={handleJoinCompany} />*/}
-                {/*    <Dialog.Input onChangeText={(value) => {insertJoinCode(value)}}/>*/}
-                {/*</Dialog.Container>*/}
+                <Dialog.Container visible={showCompanyJoin}>
+                    <Dialog.Title>직장 합류</Dialog.Title>
+                    <Dialog.Description>
+                        {`합류코드는 관라자에게서 받은 초대 이메일/문자메세지에서 찾을 수 있습니다.\n초대 이메일,문자메시지를 받지 못했으면, 관리자에게 문의하세요`}
+                    </Dialog.Description>
+                    <Dialog.Button label="취소" onPress={handleJoinCompanyCancel} />
+                    <Dialog.Button label="합류하기" onPress={handleJoinCompany} />
+                    <Dialog.Input onChangeText={(value) => {insertJoinCode(value)}} style={{borderRadius:6,borderColor: '#919191',paddingLeft: 10}}  placeholder="합류코드"/>
+                </Dialog.Container>
                 {/*<Prompt*/}
                 {/*    title="UPDATE DETAILS ID:"*/}
                 {/*    placeholder="Enter Username"*/}

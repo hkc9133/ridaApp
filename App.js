@@ -23,24 +23,39 @@ import {
 } from '@react-navigation/native';
 import {Header, LearnMoreLinks, Colors, DebugInstructions, ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import AsyncStorage from '@react-native-community/async-storage';
 import {authCheck,initialize} from './store/auth/auth';
 import {useDispatch, useSelector} from "react-redux";
 import RootStackScreen from './screen/RootStackScreen';
 import SelectCompanyScreen from './screen/SelectCompanyScreen';
 
+import { DrawerContent } from './screen/DrawerContent';
+
+
+import MainTabScreen from './screen/MainTabScreen';
+import SupportScreen from './screen/SupportScreen';
+import SettingsScreen from './screen/SettingsScreen';
+import BookmarkScreen from './screen/BookmarkScreen';
+import Loader from './component/Loader';
+
 
 // const sagaMiddleware = createSagaMiddleware();
 // const store = createStore(rootReducer,applyMiddleware(sagaMiddleware));
 // sagaMiddleware.run(rootSaga);
+const Drawer = createDrawerNavigator();
+
 
 const App = () => {
   const [isSplashScreen, setIsSplashScreen] = useState(false)
+  const [selectCompany, setSelectCompany] = useState(null)
   const dispatch = useDispatch();
 
-  const {user,authCheckLoading} = useSelector(({auth,loading}) =>({
+  const {user,company,authCheckLoading,loading} = useSelector(({auth,company,loading}) =>({
     user:auth,
+    company:company,
     authCheckLoading:loading['auth/AUTH_CHECK'],
+    loading:loading
   }))
 
   useEffect(() => {
@@ -64,7 +79,48 @@ const App = () => {
     //   }
     // }
     tokenCheck();
+    // fetch(
+    //     'http://naver.com',
+    //     {
+    //       method: 'POST',
+    //       headers: {
+    //         Accept: 'application/json',
+    //         'Content-Type': 'application/json',
+    //       },
+    //     }).then(response => {
+    //   const statusCode = response.status;
+    //   console.log(response)
+    //   // const data = response.json();
+    //   return Promise.all([statusCode, data]);
+    // }).catch((error) =>
+    //     {
+    //       console.error(error);
+    //     }
+    // );
   }, []);
+
+  useEffect(() => {
+    AsyncStorage.getItem('companyId').then((value)=>{
+      if(!authCheckLoading && user.user.login && (company.selectCompany.companyId !== null || value !== null)){
+        console.log("셋")
+        setCompany()
+      }
+    });
+
+  },[user,company])
+
+  useEffect(() =>{
+
+    if(!authCheckLoading && user.user.login){
+      setCompany()
+    }
+
+  },[authCheckLoading,user])
+
+  // useEffect(() => {
+  //   console.log(loading)
+  //
+  // },[loading])
 
   // useEffect(() => {
   //   if(user.user.token != null){
@@ -80,29 +136,77 @@ const App = () => {
   //   }
   // }
 
-  async function tokenCheck() {
+  // useEffect(async () => {
+  //   console.log(member)
+  //   const value = await AsyncStorage.getItem('userToken');
+  //   console.log(value)
+  // },[member])
+
+  function tokenCheck() {
       try {
-        const value = await AsyncStorage.getItem('userToken');
         dispatch(authCheck())
-        // if (value !== null) {
-        //   dispatch(authCheck());
-        // }
       } catch (error) {
         // Error retrieving data러
       }
   }
 
-  if(authCheckLoading == undefined && !user.user.login) {
-    return(
-        <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-          <Text>loding.......</Text>
-        </View>
-    );
+  async function setCompany() {
+        try {
+          const value = await AsyncStorage.getItem('companyId');
+          if (value !== null) {
+            setSelectCompany(value);
+          }else{
+            setSelectCompany(false);
+          }
+        } catch (error) {
+          setSelectCompany(false);
+        }
   }
+
+  // const setCompany = async () => {
+  //   console.log("셋컴")
+  //     try {
+  //       AsyncStorage.getItem('companyId', (error, value) => {
+  //         console.log("밸밸")
+  //         console.log(value)
+  //         console.log("밸밸")
+  //       });
+  //
+  //       const value = await AsyncStorage.getItem('companyId');
+  //       if (value !== null) {
+  //         console.log("널아님")
+  //         setSelectCompany(value);
+  //         console.log(value)
+  //       }
+  //     } catch (error) {
+  //     }
+  // }
+
+  // const setCompany (()) {
+  //   AsyncStorage.getItem('companyId', (error, value) => {
+  //     setSelectCompany(value);
+  //   // try {
+  //   //   const value = await AsyncStorage.getItem('companyId');
+  //   //   if (value !== null) {
+  //   //     setSelectCompany(value);
+  //   //     console.log(value)
+  //   //   }
+  //   // } catch (error) {
+  //   // }
+  // }
+
+  // if(authCheckLoading == undefined && !user.user.login) {
+  //   return(
+  //       <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+  //         <Text>loding.......</Text>
+  //       </View>
+  //   );
+  // }
 
   return (
 
         <>
+          {loading.loading && <Loader/>}
           <NavigationContainer>
             {!authCheckLoading && user.user.login ? (
                 <>
@@ -111,7 +215,22 @@ const App = () => {
                 {/*    <ScrollView*/}
                 {/*        contentInsetAdjustmentBehavior="automatic"*/}
                 {/*        style={styles.scrollView}>*/}
+                  {selectCompany === false &&
+                    <SafeAreaView>
                       <SelectCompanyScreen/>
+                    </SafeAreaView>
+                  }
+                  {selectCompany != null && selectCompany !== false && (
+                      <Drawer.Navigator drawerContent={props => <DrawerContent {...props} setCompany={setCompany} />} drawerStyle={{flexDirection: 'row',
+
+                        justifyContent: 'flex-start',backgroundColor:'transparent',alignItems:'center',width:"70%"}}>
+                        <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
+                        <Drawer.Screen name="SupportScreen" component={SupportScreen} />
+                        <Drawer.Screen name="SettingsScreen" component={SettingsScreen} />
+                        <Drawer.Screen name="BookmarkScreen" component={BookmarkScreen} />
+                      </Drawer.Navigator>
+                  )}
+                {/*</SafeAreaView>*/}
                 </>
             ) : (
                 <RootStackScreen/>

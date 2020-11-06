@@ -59,22 +59,22 @@ const auth = handleActions(
         [AUTH_CHECK_FAILURE]: (state, {payload: error}) =>
             produce(state, draft => {
                 draft.user.login = false
-                AsyncStorage.clear()
+                // AsyncStorage.clear()
             }),
         [LOGIN_SUCCESS]: (state, {payload: data}) =>
             produce(state, draft => {
                 draft.user.login = true;
                 draft.login.result = true;
                 draft.login.error = null;
-                AsyncStorage.setItem('userToken', data.data)
+                // AsyncStorage.setItem('userToken', data.data);
             }),
 
         [LOGIN_FAILURE]: (state, {payload: error}) =>
             produce(state, draft => {
                 draft.user.login = false;
                 draft.login.result = false;
-                // draft.login.error = error.response.data;
-                AsyncStorage.clear()
+                draft.login.error = error.response.data;
+                // AsyncStorage.clear()
             }),
         [SIGNUP_SUCCESS]: (state, {payload: data}) =>
             produce(state, draft => {
