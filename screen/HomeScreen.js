@@ -29,6 +29,8 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Feather from 'react-native-vector-icons/Feather';
 import ScheduleCalendars from '../component/home/ScheduleCalendars';
+import {useDispatch, useSelector} from 'react-redux';
+import {getCommuteStatus,workOut,workIn,initializeForm} from '../store/commute/commute';
 
 
 async function requestPermission() {
@@ -68,6 +70,14 @@ async function requestPermission() {
 
 const HomeScreen = ({navigation}) => {
 
+    const dispatch = useDispatch();
+
+    const {commute,commuteStatusLoading} = useSelector(({commute,loading}) =>({
+        commute:commute,
+        commuteStatusLoading:loading['commute/GET_COMMUTE_STATUS'],
+    }))
+
+
     const {colors} = useTheme();
 
     const [topSlideImage, setTopSlideImage] = useState(null);
@@ -85,11 +95,13 @@ const HomeScreen = ({navigation}) => {
             [require('../asset/image/top_slide_01.jpg'), require('../asset/image/top_slide_01.jpg'), require('../asset/image/top_slide_01.jpg')],
         );
 
-        // askPermission().then(result => {
-        //     console.log(result)
-        // });
-
         reloadLocation();
+
+        dispatch(getCommuteStatus());
+
+        if(null){
+            console.log("널도")
+        }
 
     }, []);
 
@@ -146,6 +158,27 @@ const HomeScreen = ({navigation}) => {
                 setIsAgreeLocation(false);
             }
         });
+    }
+
+    const handleWorkIn = () =>{
+        const data = {
+            workInLat:location.latitude,
+            workInLon:location.longitude
+        }
+        dispatch(workIn(data))
+        dispatch(initializeForm('workIn'))
+        // dispatch(getCommuteStatus());
+    }
+
+    const handleWorkOut = () =>{
+        const data = {
+            workInLat:location.latitude,
+            workInLon:location.longitude
+        }
+
+        dispatch(workOut(data))
+        dispatch(initializeForm('workOut'))
+        // dispatch(getCommuteStatus());
     }
 
     return (
@@ -234,30 +267,34 @@ const HomeScreen = ({navigation}) => {
                                     fillColor="rgba(71,153, 235, 1)"
                                 />
                             </MapView>
-                            <TouchableOpacity style={{
-                                position:'absolute',top:'80%',
-                                alignSelf: 'center',
-                                justifyContent:'flex-end',alignItems:'center',marginBottom:25
-                            }} onPress={() => {console.log("Aaa")}}>
-                                <View style={{
-                                    height:41,
-                                    width:170,
-                                    backgroundColor: "#013476",
-                                    borderWidth: 0,
-                                    ios: { padding: 5 },
-                                    borderRadius: 19,
-                                    justifyContent:'center',alignItems:'center',shadowColor: "#000",
-                                    shadowOffset: {
-                                        width: 0,
-                                        height: 2,
-                                    },
-                                    shadowOpacity: 0.25,
-                                    shadowRadius: 3.84,
+                            {!commuteStatusLoading && commute.commuteStatus.result !== null && (
+                                <TouchableOpacity style={{
+                                    position:'absolute',top:'80%',
+                                    alignSelf: 'center',
+                                    justifyContent:'flex-end',alignItems:'center',marginBottom:25
+                                }} onPress={() => {commute.commuteStatus.result && commute.commuteStatus.isWorkIn ? handleWorkOut() : handleWorkIn()}}>
+                                    <View style={{
+                                        height:41,
+                                        width:170,
+                                        backgroundColor: "#013476",
+                                        borderWidth: 0,
+                                        ios: { padding: 5 },
+                                        borderRadius: 19,
+                                        justifyContent:'center',alignItems:'center',shadowColor: "#000",
+                                        shadowOffset: {
+                                            width: 0,
+                                            height: 2,
+                                        },
+                                        shadowOpacity: 0.25,
+                                        shadowRadius: 3.84,
 
-                                    elevation: 5}}>
-                                    <Text style={{color:'#fff',fontWeight:'700',fontSize:15}}>출근하기</Text>
-                                </View>
-                            </TouchableOpacity>
+                                        elevation: 5}}>
+                                            <Text style={{color:'#fff',fontWeight:'700',fontSize:15}}>
+                                                {commute.commuteStatus.result && commute.commuteStatus.isWorkIn ? "퇴근하기" : "출근하기"}
+                                            </Text>
+                                    </View>
+                                </TouchableOpacity>
+                            )}
                             <TouchableOpacity onPress={() => {setKey(key+1)}} style={{
                                 position:'absolute',top:'60%',
                                 alignSelf: 'flex-end',

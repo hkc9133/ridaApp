@@ -75,6 +75,7 @@ const ScheduleCalendars = () => {
             </TouchableOpacity>
             <Calendar
                 markedDates={markedDates}
+                onDayPress={(day) => {console.log('selected day', day)}}
                 theme={{
                     // backgroundColor: '#ffffff',
                     // calendarBackground: '#ffffff',
