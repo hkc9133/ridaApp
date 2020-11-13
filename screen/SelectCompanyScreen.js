@@ -61,7 +61,6 @@ const SelectCompanyScreen = () => {
     }
 
     const handleSelectCompany = (id) => {
-        console.log(id)
         dispatch(selectCompany(id));
     }
 
@@ -94,7 +93,6 @@ const SelectCompanyScreen = () => {
                     company.company.list.map((item) => (
                         <CompanyListItem key={item.companyId} item={item} handleSelectCompany={handleSelectCompany}/>
                     ))
-
                 )}
                 {/*{company.company.list.map((item) => (*/}
                 {/*    <TouchableOpacity onPress={() => {handleJoinCompanyShow();}}>*/}

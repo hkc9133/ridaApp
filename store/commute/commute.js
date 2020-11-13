@@ -4,7 +4,7 @@ import {takeLatest} from 'redux-saga/effects';
 import createRequestSaga, {createRequestActionTypes} from "../../lib/createRequestSaga";
 import * as commuteAPI from '../../lib/api/commute/commue';
 
-const [GET_COMMUTE_STATUS,GET_COMMUTE_STATUS_SUCCESS, GET_COMMUTE_STATUS_FAILURE] = createRequestActionTypes('commute/SELECT_COMPANY')
+const [GET_COMMUTE_STATUS,GET_COMMUTE_STATUS_SUCCESS, GET_COMMUTE_STATUS_FAILURE] = createRequestActionTypes('commute/GET_COMMUTE_STATUS')
 const [WORK_IN,WORK_IN_SUCCESS, WORK_IN_FAILURE] = createRequestActionTypes('commute/WORK_IN')
 const [WORK_OUT,WORK_OUT_SUCCESS, WORK_OUT_FAILURE] = createRequestActionTypes('commute/WORK_OUT')
 const INITIALIZE = 'commute/INITIALIZE';
@@ -46,7 +46,7 @@ const commute = handleActions(
         [GET_COMMUTE_STATUS_SUCCESS]: (state, {payload: response}) =>
             produce(state,draft => {
                 draft.commuteStatus.result = true
-                draft.commuteStatus.isWorkIn = true
+                draft.commuteStatus.isWorkIn = response.data != null ? true : false
                 draft.commuteStatus.commuteInfo = response.data
 
             }),
@@ -60,21 +60,23 @@ const commute = handleActions(
             }),
         [WORK_IN_SUCCESS]: (state, {payload: response}) =>
             produce(state,draft => {
-                draft.workIn = true
+                draft.workIn.result = true
+                draft.workOut.result = null
             }),
 
         [WORK_IN_FAILURE]: (state, {payload: error}) =>
             produce(state, draft => {
-                draft.workIn = false
+                draft.workIn.result = false
             }),
         [WORK_OUT_SUCCESS]: (state, {payload: response}) =>
             produce(state,draft => {
-                draft.workOut = true
+                draft.workOut.result = true
+                draft.workIn.result = null
             }),
 
         [WORK_OUT_FAILURE]: (state, {payload: error}) =>
             produce(state, draft => {
-                draft.workOut = false
+                draft.workOut.result = false
 
             }),
         [INITIALIZE]: (state, {payload: form}) => ({

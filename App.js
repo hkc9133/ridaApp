@@ -38,6 +38,12 @@ import SupportScreen from './screen/SupportScreen';
 import SettingsScreen from './screen/SettingsScreen';
 import BookmarkScreen from './screen/BookmarkScreen';
 import Loader from './component/Loader';
+import CookieManager from '@react-native-community/cookies';
+
+import client, {url} from './lib/api/client';
+import CompanyRouter from './screen/CompanyRouter';
+import {initializeCompany, settingCompany} from './store/company/company';
+
 
 
 // const sagaMiddleware = createSagaMiddleware();
@@ -64,45 +70,18 @@ const App = () => {
       SplashScreen.hide();
     }, 1500);
 
-    // async () =>{
-    //   try {
-    //     const value = await AsyncStorage.getItem('userToken');
-    //     console.log("첵1")
-    //     if (value !== null) {
-    //       console.log("첵")
-    //       dispatch(authCheck());
-    //     }
-    //   } catch (error) {
-    //     console.log("초기")
-    //     dispatch(initialize());
-    //     // Error retrieving data
-    //   }
-    // }
     tokenCheck();
-    // fetch(
-    //     'http://naver.com',
-    //     {
-    //       method: 'POST',
-    //       headers: {
-    //         Accept: 'application/json',
-    //         'Content-Type': 'application/json',
-    //       },
-    //     }).then(response => {
-    //   const statusCode = response.status;
-    //   console.log(response)
-    //   // const data = response.json();
-    //   return Promise.all([statusCode, data]);
-    // }).catch((error) =>
-    //     {
-    //       console.error(error);
-    //     }
-    // );
   }, []);
 
   useEffect(() => {
-    AsyncStorage.getItem('companyId').then((value)=>{
+    // CookieManager.get(url)
+    //     .then((cookies) => {
+    //       console.log(cookies['COMPANY_IDa']['value'])
+    //     }).error((e) => {
+    //       console.log(e)
+    //     })
+    AsyncStorage.getItem('COMPANY_ID').then((value)=>{
       if(!authCheckLoading && user.user.login && (company.selectCompany.companyId !== null || value !== null)){
-        console.log("셋")
         setCompany()
       }
     });
@@ -151,9 +130,22 @@ const App = () => {
   }
 
   async function setCompany() {
+        CookieManager.get(url)
+            .then((cookies) => {
+              if(cookies['COMPANY_ID']['value'] == '' || cookies['COMPANY_ID']['value'] == null){
+                dispatch(initializeCompany())
+              }else{
+                dispatch(settingCompany(cookies['COMPANY_ID']['value']))
+              }
+            }).catch((a) =>{
+          dispatch(initializeCompany())
+        });
+
+
         try {
-          const value = await AsyncStorage.getItem('companyId');
+          const value = await AsyncStorage.getItem('COMPANY_ID');
           if (value !== null) {
+
             setSelectCompany(value);
           }else{
             setSelectCompany(false);
@@ -215,20 +207,20 @@ const App = () => {
                 {/*    <ScrollView*/}
                 {/*        contentInsetAdjustmentBehavior="automatic"*/}
                 {/*        style={styles.scrollView}>*/}
-                  {selectCompany === false &&
-                    <SafeAreaView>
+                  {company.selectCompany.companyId === null &&
                       <SelectCompanyScreen/>
-                    </SafeAreaView>
                   }
-                  {selectCompany != null && selectCompany !== false && (
-                      <Drawer.Navigator drawerContent={props => <DrawerContent {...props} setCompany={setCompany} />} drawerStyle={{flexDirection: 'row',
+                  {company.selectCompany.companyId != null && company.selectCompany.companyId !== false && (
+                      <CompanyRouter setCompany={setCompany}>
+                        <Drawer.Navigator drawerContent={props => <DrawerContent {...props} setCompany={setCompany} />} drawerStyle={{flexDirection: 'row',
 
-                        justifyContent: 'flex-start',backgroundColor:'transparent',alignItems:'center',width:"70%"}}>
-                        <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
-                        <Drawer.Screen name="SupportScreen" component={SupportScreen} />
-                        <Drawer.Screen name="SettingsScreen" component={SettingsScreen} />
-                        <Drawer.Screen name="BookmarkScreen" component={BookmarkScreen} />
-                      </Drawer.Navigator>
+                          justifyContent: 'flex-start',backgroundColor:'transparent',alignItems:'center',width:"70%"}}>
+                          <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
+                          <Drawer.Screen name="SupportScreen" component={SupportScreen} />
+                          <Drawer.Screen name="SettingsScreen" component={SettingsScreen} />
+                          <Drawer.Screen name="BookmarkScreen" component={BookmarkScreen} />
+                        </Drawer.Navigator>
+                      </CompanyRouter>
                   )}
                 {/*</SafeAreaView>*/}
                 </>

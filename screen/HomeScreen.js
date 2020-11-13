@@ -1,4 +1,4 @@
-import React, {useEffect, useState,useLayoutEffect} from 'react';
+import React, {useEffect, useState, useLayoutEffect, useCallback} from 'react';
 import {
     View,
     Text,
@@ -9,13 +9,15 @@ import {
     ScrollView,
     TouchableOpacity,
     StatusBar,
+    Image,
 } from 'react-native';
-import {useTheme} from '@react-navigation/native';
+import {useTheme} from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
 import {SliderBox} from 'react-native-image-slider-box';
-import Carousel from 'react-native-snap-carousel';
+// import Carousel from 'react-native-snap-carousel';
 import Geolocation from 'react-native-geolocation-service';
 import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
+import Carousel from 'react-native-snap-carousel';
 
 
 import {
@@ -24,13 +26,17 @@ import {
     Card,
 } from 'react-native-paper';
 
+import moment from 'moment';
+
 import FastImage from 'react-native-fast-image';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Feather from 'react-native-vector-icons/Feather';
 import ScheduleCalendars from '../component/home/ScheduleCalendars';
 import {useDispatch, useSelector} from 'react-redux';
-import {getCommuteStatus,workOut,workIn,initializeForm} from '../store/commute/commute';
+import {getCommuteStatus, workOut, workIn, initializeForm} from '../store/commute/commute';
+import Dialog from 'react-native-dialog';
+import WorkScheduleAddScreen from './WorkScheduleAddScreen';
 
 
 async function requestPermission() {
@@ -71,78 +77,79 @@ async function requestPermission() {
 const HomeScreen = ({navigation}) => {
 
     const dispatch = useDispatch();
-
-    const {commute,commuteStatusLoading} = useSelector(({commute,loading}) =>({
-        commute:commute,
-        commuteStatusLoading:loading['commute/GET_COMMUTE_STATUS'],
-    }))
-
-
     const {colors} = useTheme();
 
-    const [topSlideImage, setTopSlideImage] = useState(null);
+    const {commute, commuteStatusLoading, workInLoading, workOutLoading} = useSelector(({commute, loading}) => ({
+        commute: commute,
+        commuteStatusLoading: loading['commute/GET_COMMUTE_STATUS'],
+        workInLoading: loading['commute/WORK_IN'],
+        workOutLoading: loading['commute/WORK_OUT'],
+    }));
+
+    const [topSlideImage, setTopSlideImage] = useState([require('../asset/image/top_slide_01.jpg'), require('../asset/image/top_slide_01.jpg'), require('../asset/image/top_slide_01.jpg')]);
     const [slideIdx, setSlideIdx] = useState(1);
     const [isAgreeLocation, setIsAgreeLocation] = useState(null);
     const [location, setLocation] = useState(null);
     const [key, setKey] = useState(10);
 
+    const [commuteInfo, setCommuteInfo] = useState({
+        isShow: false,
+        type: '',
+    });
+
     const markerRef = React.createRef();
     const markerPointRef = React.createRef();
 
     useEffect(() => {
-
-        setTopSlideImage(
-            [require('../asset/image/top_slide_01.jpg'), require('../asset/image/top_slide_01.jpg'), require('../asset/image/top_slide_01.jpg')],
-        );
-
         reloadLocation();
-
         dispatch(getCommuteStatus());
 
-        if(null){
-            console.log("널도")
-        }
-
     }, []);
-
-    const theme = useTheme();
 
     useEffect(() => {
         reloadLocation();
 
-    },[key])
+    }, [key]);
+
+    useLayoutEffect(() => {
+    }, []);
+
+    useEffect(() => {
+        if (!workInLoading && !workOutLoading && (commute.workIn.result !== null || commute.workOut.result !== null)) {
+            dispatch(getCommuteStatus());
+            if (commute.workIn.result === true) {
+                setCommuteInfo({
+                    ...commuteInfo,
+                    isShow: true,
+                    type: '출근',
+                });
+            } else if (commute.workOut.result === true) {
+                setCommuteInfo({
+                    ...commuteInfo,
+                    isShow: true,
+                    type: '퇴근',
+                });
+            }
+        }
+    }, [commute.workIn, commute.workOut, workInLoading, workOutLoading]);
 
     useLayoutEffect(() => {
 
         if (Platform.OS === 'ios') {
             if (markerPointRef.current) {
                 markerPointRef.current.setNativeProps({
-                    strokeColor:"#fff",
-                    fillColor:"rgba(71,153, 235, 1)"
-                })
+                    strokeColor: '#fff',
+                    fillColor: 'rgba(71,153, 235, 1)',
+                });
             }
             if (markerRef.current) {
                 markerRef.current.setNativeProps({
-                    strokeColor:"rgba(71,153, 235, 1)",
-                    fillColor:"rgba(71,153, 235, 0.4)"
-                })
+                    strokeColor: 'rgba(71,153, 235, 1)',
+                    fillColor: 'rgba(71,153, 235, 0.4)',
+                });
             }
-            // setTimeout(() => {
-            //     if (markerRef.current) {
-            //         markerRef.current.setNativeProps({
-            //             strokeColor:"rgba(71,153, 235, 1)",
-            //             fillColor:"rgba(71,153, 235, 0.4)"
-            //         })
-            //     }
-            //     if (markerPointRef.current) {
-            //         markerPointRef.current.setNativeProps({
-            //             strokeColor:"#fff",
-            //             fillColor:"rgba(71,153, 235, 1)"
-            //         })
-            //     }
-            // }, 0)
         }
-    }, [markerRef,markerPointRef])
+    }, [markerRef, markerPointRef]);
 
     const reloadLocation = () => {
         requestPermission().then(result => {
@@ -151,58 +158,136 @@ const HomeScreen = ({navigation}) => {
                     setIsAgreeLocation(true);
                     setLocation(pos.coords);
                 }, error => {
-                    console.log(error)
+                    console.log(error);
 
                 }, {enableHighAccuracy: true, timeout: 10000, maximumAge: 3600});
             } else {
                 setIsAgreeLocation(false);
             }
         });
-    }
+    };
 
-    const handleWorkIn = () =>{
+    const handleWorkIn = () => {
         const data = {
-            workInLat:location.latitude,
-            workInLon:location.longitude
-        }
-        dispatch(workIn(data))
-        dispatch(initializeForm('workIn'))
-        // dispatch(getCommuteStatus());
-    }
+            workInLat: location.latitude,
+            workInLon: location.longitude,
+        };
+        dispatch(workIn(data));
+        dispatch(initializeForm('workIn'));
+    };
 
-    const handleWorkOut = () =>{
+    const handleWorkOut = () => {
         const data = {
-            workInLat:location.latitude,
-            workInLon:location.longitude
-        }
+            commuteIdx: commute.commuteStatus.commuteInfo.commuteIdx,
+            workOutLat: location.latitude,
+            workOutLon: location.longitude,
+        };
 
-        dispatch(workOut(data))
-        dispatch(initializeForm('workOut'))
-        // dispatch(getCommuteStatus());
+        dispatch(workOut(data));
+        dispatch(initializeForm('workOut'));
+    };
+
+    const showWorkScheduleModal = () => {
+        navigation.push('workScheduleAdd')
+        // navigation.push({
+        //     component: {
+        //         name: WorkScheduleAddScreen,
+        //         // passProps: {},
+        //         options: {
+        //             animations: {
+        //                 push: {
+        //                     sharedElementTransitions: [
+        //                         // {
+        //                         //     fromId: `image${item.id}`,
+        //                         //     toId: `image${item.id}Dest`,
+        //                         // },
+        //                     ],
+        //                 },
+        //             },
+        //         },
+        //     },
+        // });
     }
+    const renderItem = ({item, index}) => {
+        return (
+            <View>
+                <FastImage
+                    style={{width: wp('100%'), height: 220}}
+                    source={item}
+                    resizeMode={FastImage.resizeMode.cover}
+                />
+            </View>
+        );
+    };
 
     return (
-        <Animatable.View animation="fadeInUp" style={{flex: 1}}>
+        <Animatable.View animation="fadeInUp" style={{flex: 1, flexDirection: 'row'}}>
             {/*<StatusBar translucent backgroundColor='transparent' />*/}
             <ScrollView contentInsetAdjustmentBehavior="never">
                 {topSlideImage != null && (
-                    <View style={{width: wp('100%')}}>
-                        <SliderBox
-                            ImageComponent={FastImage}
-                            autoplay={true}  //자동 슬라이드 넘김
-                            autoplayInterval={10000}
-                            circleLoop={true} //맨끝 슬라이드에서 다시 첫슬라이드로
-                            resizeMode={FastImage.resizeMode.cover}  // 이미지 사이즈 조절값
-                            images={topSlideImage} // 이미지 주소 리스트
-                            dotColor="rgba(0,0,0,0)" // 아래 점 투명으로 안보이게 가림
-                            inactiveDotColor="rgba(0,0,0,0)"
-                            imageLoadingColor='#0ec269'
-                            // ImageComponentStyle={{ width: wp('100%'), height: hp('30%') }} // 이미지 Style 적용
-                            currentImageEmitter={(index) => { // 이미지가 바뀔때 어떤 동작을 할지 설정
-                                setSlideIdx(index + 1);
+                    <View style={{width: wp('100%'), height: 220}}>
+                        <Carousel
+                            layout={'default'}
+                            data={topSlideImage}
+                            renderItem={renderItem}
+                            sliderWidth={wp('100%')}
+                            itemWidth={wp('100%')}
+                            onSnapToItem={(e) => {
+                                setSlideIdx(e + 1);
                             }}
-                            // ImageComponentStyle={{borderRadius: 15, width: '100%', marginTop: 5}}
+                            inactiveSlideScale={1}
+                            autoplay={true}
+                            loop={true}
                         />
+
+                        {/*<ScrollView pagingEnabled={true} horizontal={true} showsHorizontalScrollIndicator={true}*/}
+                        {/*            scrollEventThrottle={16} onScroll={(event) => {*/}
+                        {/*    handleScroll(event);*/}
+                        {/*}} style={{backgroundColor: 'red', height: 220}}>*/}
+                        {/*    /!*{*!/*/}
+                        {/*    /!*    topSlideImage.map((image,index) => {*!/*/}
+                        {/*    /!*        <FastImage*!/*/}
+                        {/*    /!*            style={{ width:wp("100%"), height: 400 }}*!/*/}
+                        {/*    /!*            source={image}*!/*/}
+                        {/*    /!*            resizeMode={FastImage.resizeMode.contain}*!/*/}
+                        {/*    /!*        />*!/*/}
+                        {/*    /!*    })*!/*/}
+                        {/*    /!*}*!/*/}
+                        {/*    <FastImage*/}
+                        {/*        style={{width: wp('100%'), height: 220}}*/}
+                        {/*        source={topSlideImage[0]}*/}
+                        {/*        resizeMode={FastImage.resizeMode.stretch}*/}
+                        {/*    />*/}
+                        {/*    <FastImage*/}
+                        {/*        style={{width: wp('100%'), height: 220}}*/}
+                        {/*        source={topSlideImage[0]}*/}
+                        {/*        resizeMode={FastImage.resizeMode.stretch}*/}
+                        {/*    />*/}
+                        {/*    <FastImage*/}
+                        {/*        style={{width: wp('100%'), height: 220}}*/}
+                        {/*        source={topSlideImage[0]}*/}
+                        {/*        resizeMode={FastImage.resizeMode.stretch}*/}
+                        {/*    />*/}
+
+                        {/*</ScrollView>*/}
+
+                        {/*<SliderBox*/}
+                        {/*    ImageComponent={FastImage}*/}
+                        {/*    autoplay={true}  //자동 슬라이드 넘김*/}
+                        {/*    autoplayInterval={10000}*/}
+                        {/*    circleLoop={true} //맨끝 슬라이드에서 다시 첫슬라이드로*/}
+                        {/*    resizeMode={FastImage.resizeMode.cover}  // 이미지 사이즈 조절값*/}
+                        {/*    images={topSlideImage} // 이미지 주소 리스트*/}
+                        {/*    dotColor="rgba(0,0,0,0)" // 아래 점 투명으로 안보이게 가림*/}
+                        {/*    inactiveDotColor="rgba(0,0,0,0)"*/}
+                        {/*    imageLoadingColor='#0ec269'*/}
+                        {/*    // ImageComponentStyle={{ width: wp('100%'), height: hp('30%') }} // 이미지 Style 적용*/}
+                        {/*    currentImageEmitter={(index) => { // 이미지가 바뀔때 어떤 동작을 할지 설정*/}
+                        {/*        setSlideIdx(index + 1);*/}
+                        {/*    }}*/}
+                        {/*    paginationBoxVerticalPadding={0}*/}
+                        {/*    ImageComponentStyle={{width: '100%',height:220}}*/}
+                        {/*/>*/}
                         <View
                             style={{
                                 position: 'absolute',
@@ -221,7 +306,7 @@ const HomeScreen = ({navigation}) => {
                         </View>
                     </View>
                 )}
-                <View style={{height: wp('100%'),flex:1}}>
+                <View style={{height: wp('100%'), flex: 1}}>
                     {location != null && isAgreeLocation === true && (
                         <>
                             <MapView
@@ -242,7 +327,7 @@ const HomeScreen = ({navigation}) => {
                                 {/*>*/}
                                 {/*</Marker>*/}
                                 <MapView.Circle
-                                    key = {location.latitude+"Marker"}
+                                    key={location.latitude + 'Marker'}
                                     ref={markerRef}
                                     center={{
                                         latitude: location.latitude,
@@ -254,7 +339,7 @@ const HomeScreen = ({navigation}) => {
                                     fillColor="rgba(71,153, 235, 0.4)"
                                 />
                                 <MapView.Circle
-                                    key = {location.latitude+"MarkerPoint"}
+                                    key={location.latitude + 'MarkerPoint'}
                                     ref={markerPointRef}
                                     center={{
                                         latitude: location.latitude,
@@ -269,18 +354,22 @@ const HomeScreen = ({navigation}) => {
                             </MapView>
                             {!commuteStatusLoading && commute.commuteStatus.result !== null && (
                                 <TouchableOpacity style={{
-                                    position:'absolute',top:'80%',
+                                    position: 'absolute', top: '80%',
                                     alignSelf: 'center',
-                                    justifyContent:'flex-end',alignItems:'center',marginBottom:25
-                                }} onPress={() => {commute.commuteStatus.result && commute.commuteStatus.isWorkIn ? handleWorkOut() : handleWorkIn()}}>
+                                    justifyContent: 'flex-end', alignItems: 'center', marginBottom: 25,
+                                }} onPress={() => {
+                                    commute.commuteStatus.result && commute.commuteStatus.isWorkIn ? handleWorkOut() : handleWorkIn();
+                                }}>
                                     <View style={{
-                                        height:41,
-                                        width:170,
-                                        backgroundColor: "#013476",
+                                        height: 41,
+                                        minWidth: 170,
+                                        paddingLeft: 20,
+                                        paddingRight: 20,
+                                        backgroundColor: '#013476',
                                         borderWidth: 0,
-                                        ios: { padding: 5 },
+                                        ios: {padding: 5},
                                         borderRadius: 19,
-                                        justifyContent:'center',alignItems:'center',shadowColor: "#000",
+                                        justifyContent: 'center', alignItems: 'center', shadowColor: '#000',
                                         shadowOffset: {
                                             width: 0,
                                             height: 2,
@@ -288,28 +377,38 @@ const HomeScreen = ({navigation}) => {
                                         shadowOpacity: 0.25,
                                         shadowRadius: 3.84,
 
-                                        elevation: 5}}>
-                                            <Text style={{color:'#fff',fontWeight:'700',fontSize:15}}>
-                                                {commute.commuteStatus.result && commute.commuteStatus.isWorkIn ? "퇴근하기" : "출근하기"}
-                                            </Text>
+                                        elevation: 5,
+                                    }}>
+                                        <Text style={{color: '#fff', fontWeight: '700', fontSize: 15}}>
+                                            {commute.commuteStatus.result && commute.commuteStatus.isWorkIn ? `${moment(commute.commuteStatus.commuteInfo.clockInDate).format('YYYY.MM.DD (HH:mm:ss)')}   퇴근하기` : '출근하기'}
+                                        </Text>
                                     </View>
                                 </TouchableOpacity>
                             )}
-                            <TouchableOpacity onPress={() => {setKey(key+1)}} style={{
-                                position:'absolute',top:'60%',
+                            <TouchableOpacity onPress={() => {
+                                setKey(key + 1);
+                            }} style={{
+                                position: 'absolute', top: '60%',
                                 alignSelf: 'flex-end',
-                                right:15,
-                                justifyContent:'flex-end',alignItems:'center',marginBottom:25,
-                                shadowColor: "#000",
+                                right: 15,
+                                justifyContent: 'flex-end', alignItems: 'center', marginBottom: 25,
+                                shadowColor: '#000',
                                 shadowOffset: {
                                     width: 0,
                                     height: 2,
                                 },
                                 shadowOpacity: 0.25,
                                 shadowRadius: 3.84,
-                                elevation: 5
+                                elevation: 5,
                             }}>
-                                <View style={{width:44,height:44,backgroundColor:'#fff',justifyContent:'center',alignItems:'center',borderRadius:22}}>
+                                <View style={{
+                                    width: 44,
+                                    height: 44,
+                                    backgroundColor: '#fff',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    borderRadius: 22,
+                                }}>
                                     <Feather
                                         name="refresh-cw"
                                         color='black'
@@ -335,7 +434,26 @@ const HomeScreen = ({navigation}) => {
                 </View>
 
                 <ScheduleCalendars/>
+                <Dialog.Container visible={commuteInfo.isShow}>
+                    <Dialog.Title>{`${commuteInfo.type} 완료`}</Dialog.Title>
+                    <Dialog.Description>
+                        {`${commuteInfo.type}처리가 완료되었습니다.`}
+                    </Dialog.Description>
+                    <Dialog.Button label="확인" onPress={() => {
+                        setCommuteInfo({...commuteInfo, isShow: false});
+                    }}/>
+                </Dialog.Container>
             </ScrollView>
+            {/*<TouchableOpacity onPress={(e) => {navigation.navigate("workScheduleAdd")}}>*/}
+            <TouchableOpacity onPress={(e) => {showWorkScheduleModal();}} style={[styles.plusButton,{zIndex:9999}]}>
+                <View style={[styles.plusButton,{backgroundColor: colors.ridaTheme}]}>
+                    <Feather
+                        name="plus"
+                        color='#fff'
+                        size={40}
+                    />
+                </View>
+            </TouchableOpacity>
         </Animatable.View>
 
 
@@ -345,9 +463,40 @@ const HomeScreen = ({navigation}) => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-    container: {
+    wrapper: {},
+    slide1: {
         flex: 1,
-        alignItems: 'center',
         justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#9DD6EB',
+    },
+    slide2: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#97CAE5',
+    },
+    slide3: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#92BBD9',
+    },
+    text: {
+        color: '#fff',
+        fontSize: 30,
+        fontWeight: 'bold',
+    },
+    plusButton: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        position: 'absolute',
+        alignSelf: 'flex-end',
+        right: 15,
+        bottom: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
+

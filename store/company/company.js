@@ -10,12 +10,14 @@ const [GET_COMPANY_LIST,GET_COMPANY_LIST_SUCCESS, GET_COMPANY_LIST_FAILURE] = cr
 const [SELECT_COMPANY,SELECT_COMPANY_SUCCESS, SELECT_COMPANY_FAILURE] = createRequestActionTypes('company/SELECT_COMPANY')
 const INITIALIZE = 'company/INITIALIZE';
 const INITIALIZE_COMPANY = 'company/INITIALIZE_COMPANY';
+const SETTING_COMPANY = 'company/SETTING_COMPANY';
 
 
 export const getCompanyList = createAction(GET_COMPANY_LIST);
 export const selectCompany = createAction(SELECT_COMPANY,(id)=>(id));
 export const initialize = createAction(INITIALIZE);
 export const initializeCompany = createAction(INITIALIZE_COMPANY);
+export const settingCompany = createAction(SETTING_COMPANY, (companyId)=>(companyId));
 
 const getCompanyListSaga = createRequestSaga(GET_COMPANY_LIST, companyAPI.getCompanyList);
 const selectCompanySaga = createRequestSaga(SELECT_COMPANY, companyAPI.selectCompany);
@@ -55,22 +57,26 @@ const company = handleActions(
                 draft.selectCompany.companyId = response.data.companyId;
                 draft.selectCompany.result = true;
                 draft.selectCompany.error = false;
-                AsyncStorage.setItem('companyToken', response.data.token);
-                AsyncStorage.setItem('companyId', response.data.companyId);
+                AsyncStorage.setItem('COMPANY_ID', response.data.companyId);
             }),
 
         [SELECT_COMPANY_FAILURE]: (state, {payload: error}) =>
             produce(state, draft => {
                 draft.selectCompany.result = false;
                 draft.selectCompany.error = error.response.data;
-                AsyncStorage.clear();
+                AsyncStorage.removeItem('COMPANY_ID');
+            }),
+        [SETTING_COMPANY]: (state, {payload: id}) =>
+            produce(state, draft => {
+                draft.selectCompany.companyId = id;
+                draft.selectCompany.result = true;
             }),
         [INITIALIZE_COMPANY]: (state, {payload: form}) =>
             produce(state, draft => {
                 draft.selectCompany.companyId = initialState.selectCompany.companyId;
                 draft.selectCompany.result = initialState.selectCompany.result;
                 draft.selectCompany.error = initialState.selectCompany.error;
-                AsyncStorage.removeItem('companyId');
+                AsyncStorage.removeItem('COMPANY_ID');
                 AsyncStorage.removeItem('companyToken');
             }),
         [INITIALIZE]: (state, {payload: form}) => ({

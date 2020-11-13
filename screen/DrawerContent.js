@@ -21,6 +21,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch} from 'react-redux';
 import {initializeCompany} from '../store/company/company';
 import Feather from 'react-native-vector-icons/Feather';
+import CookieManager from '@react-native-community/cookies';
 
 // import{ AuthContext } from '../components/context';
 
@@ -36,7 +37,8 @@ export function DrawerContent(props) {
     const changeCompany = async () => {
         try {
             dispatch(initializeCompany());
-            await AsyncStorage.removeItem('companyId');
+            await AsyncStorage.removeItem('COMPANY_ID');
+
             props.setCompany();
         }
         catch(error) {

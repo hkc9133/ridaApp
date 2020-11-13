@@ -20,6 +20,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		902EB3F8F516ABFF7494CDBB /* libPods-ridaApp-ridaAppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 79B1227DB7353E7E1C54DF89 /* libPods-ridaApp-ridaAppTests.a */; };
 		B92C5E862519F98600A0FAE7 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B92C5E852519F98600A0FAE7 /* SplashScreen.storyboard */; };
+		B95BED60255B0E2600B94FC2 /* ios in Resources */ = {isa = PBXBuildFile; fileRef = B95BED5F255B0E2600B94FC2 /* ios */; };
 		B98D709B25552B5D00165EB8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98D709A25552B5D00165EB8 /* File.swift */; };
 		C20A05D4EED28368201ED7B3 /* libPods-ridaApp-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD88CC86E35E4ED3FEA15F5F /* libPods-ridaApp-tvOS.a */; };
 /* End PBXBuildFile section */
@@ -63,6 +64,7 @@
 		7BDD4FF4CE6D6B933127C931 /* Pods-ridaApp-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ridaApp-tvOS.release.xcconfig"; path = "Target Support Files/Pods-ridaApp-tvOS/Pods-ridaApp-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ridaApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B92C5E852519F98600A0FAE7 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SplashScreen.storyboard; sourceTree = "<group>"; };
+		B95BED5F255B0E2600B94FC2 /* ios */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ios; path = "../node_modules/@react-native-community/cookies/ios"; sourceTree = "<group>"; };
 		B98D709925552B5C00165EB8 /* ridaApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ridaApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		B98D709A25552B5D00165EB8 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		B9C34EB225499C5A003909A9 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Regular.ttf; sourceTree = "<group>"; };
@@ -190,6 +192,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				B95BED5F255B0E2600B94FC2 /* ios */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -365,6 +368,8 @@
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+			);
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* ridaApp */,
@@ -374,6 +379,9 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		00E356EC1AD99517003FC87E /* Resources */ = {
@@ -389,6 +397,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				B92C5E862519F98600A0FAE7 /* SplashScreen.storyboard in Resources */,
+				B95BED60255B0E2600B94FC2 /* ios in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -744,6 +753,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ridaApp.app/ridaApp";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+				);
 			};
 			name = Debug;
 		};
@@ -765,6 +777,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ridaApp.app/ridaApp";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+				);
 			};
 			name = Release;
 		};
@@ -790,6 +805,9 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+				);
 			};
 			name = Debug;
 		};
@@ -813,6 +831,9 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "ridaApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+				);
 			};
 			name = Release;
 		};
@@ -841,6 +862,9 @@
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+				);
 			};
 			name = Debug;
 		};
@@ -869,6 +893,9 @@
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+				);
 			};
 			name = Release;
 		};
@@ -896,6 +923,9 @@
 				SDKROOT = appletvos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ridaApp-tvOS.app/ridaApp-tvOS";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+				);
 			};
 			name = Debug;
 		};
@@ -923,6 +953,9 @@
 				SDKROOT = appletvos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ridaApp-tvOS.app/ridaApp-tvOS";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+				);
 			};
 			name = Release;
 		};
