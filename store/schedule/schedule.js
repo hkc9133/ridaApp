@@ -47,7 +47,8 @@ const initialState = {
     },
     add:{
         result:null,
-        data:null
+        data:null,
+        code:null
     },
     monthList:{
         result:null,
@@ -93,6 +94,7 @@ const schedule = handleActions(
             produce(state, draft => {
                 draft.add.result = false
                 draft.add.data = null
+                draft.add.code = error.response.status
             }),
         [GET_MONTH_SCHEDULE_SUCCESS]: (state, {payload: response}) =>
             produce(state,draft => {

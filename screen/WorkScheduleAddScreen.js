@@ -1,4 +1,4 @@
-import React,{useState,useRef} from 'react';
+import React,{useState,useRef,useCallback} from 'react';
 import {SafeAreaView,Text, TouchableOpacity, View, ScrollView, TextInput, StyleSheet, Platform,Keyboard,TouchableWithoutFeedback} from 'react-native';
 // import RNPickerSelect from 'react-native-picker-select';
 import ReactNativePickerModule from "react-native-picker-module"
@@ -9,9 +9,10 @@ import {useDispatch, useSelector} from 'react-redux';
 import {addSchedule, initializeForm} from '../store/schedule/schedule';
 import Dialog from 'react-native-dialog';
 
-const scheduleTypeList = [{
-    value: "WO",
-    label: "업무",
+const scheduleTypeList = [
+    {
+        value: "WO",
+        label: "업무",
     },
     {
         value: "IT",
@@ -45,7 +46,7 @@ const WorkScheduleAddScreen = ({navigation}) => {
     const [startTimePicker, setStartTimePicker] = useState(false);
     const [endDatePicker, setEndDatePicker] = useState(false);
     const [endTimePicker, setEndTimePicker] = useState(false);
-    const [isConfirm, setIsConfirm] = useState(false);
+    const [isConfirm, setIsConfirm] = useState(true);
     const [workSchedule,setWorkSchedule] = useState({
         title:"",
         content:"",
@@ -55,6 +56,11 @@ const WorkScheduleAddScreen = ({navigation}) => {
         endDate:"",
         endTime:""
     })
+    const [error, setError] = useState({
+        result:null,
+        errorCode:null,
+        msg:""
+    });
 
     const scheduleTypeRef = React.useRef();
 
@@ -92,14 +98,13 @@ const WorkScheduleAddScreen = ({navigation}) => {
             headerLeft:() => (<TouchableOpacity onPress={() => {navigation.goBack();}}><Text style={{padding:8,fontSize:16,fontWeight:'500'}}>닫기</Text></TouchableOpacity>),
             headerRight:() => (<TouchableOpacity onPress={() => {submitSchedule();}} disabled={!isConfirm} di><Text style={{padding:8,fontSize:16,fontWeight:'500',color: !isConfirm ? "gray" : 'black'}}>저장</Text></TouchableOpacity>)
         });
-    }, [navigation,isConfirm]);
+    }, [navigation,isConfirm,workSchedule]);
 
     React.useEffect(() => {
         let confirm = true;
         Object.keys(workSchedule).forEach(function(key){
             if(workSchedule[key] == null || workSchedule[key] == ""){
                 confirm = false;
-                return;
             }
         });
         if(confirm){
@@ -108,6 +113,18 @@ const WorkScheduleAddScreen = ({navigation}) => {
             setIsConfirm(false)
         }
     },[workSchedule])
+
+    React.useEffect(() => {
+
+        if(schedule.result === false && schedule.errorCode !== null){
+            setError({
+                result:false,
+                errorCode:schedule.errorCode,
+                msg:schedule.code == 409 ? "중복된 일정이 있습니다" : "일정 등록중 문제가 발생했씁니다"
+            })
+        }
+
+    },[schedule])
 
     // React.useEffect(() => {
     //     if(!loading && schedule.result){
@@ -123,33 +140,47 @@ const WorkScheduleAddScreen = ({navigation}) => {
     //     }
     // },[schedule,loading])
 
-    const onChangeTitle = (value) =>{
-        setWorkSchedule({
-            ...workSchedule,
-            title:value
-        })
 
-    }
+    const onChangeTitle = useCallback(
+        value => {
+            setWorkSchedule({
+                ...workSchedule,
+                title:value
+            })
+        },
+        [workSchedule]
+    );
 
-    const onChangeContent = (value) =>{
-        setWorkSchedule({
-            ...workSchedule,
-            content:value
-        })
-    }
+
+    const onChangeContent = useCallback(
+        value => {
+            setWorkSchedule({
+                ...workSchedule,
+                content:value
+            })
+        },
+        [workSchedule]
+    );
 
     const submitSchedule = () =>{
-        dispatch(addSchedule(workSchedule));
+        const data = {
+            title:workSchedule.title,
+            content:workSchedule.content,
+            scheduleType:workSchedule.scheduleType,
+            startDate: `${workSchedule.startDate} ${workSchedule.startTime}`,
+            endDate:`${workSchedule.endDate} ${workSchedule.endTime}`
+        }
+        dispatch(addSchedule(data));
     }
 
 
 
     return (
         <SafeAreaView>
-            <ScrollView>
+            <ScrollView keyboardShouldPersistTaps='always'>
                 <View style={styles.section}>
                     <View style={{height:30,marginBottom:15}}>
-                        <TextInput value={workSchedule.title} placeholder="제목을 입력하세요"  style={styles.textInput} onChangeText={(value) => onChangeTitle(value)}/>
+                        <TextInput value={workSchedule.title} placeholder="제목을 입력하세요" value={workSchedule.title}  style={styles.textInput} onChangeText={(value) => onChangeTitle(value)}/>
                     </View>
                     <View style={{flexDirection:'row',justifyContent: 'space-between',marginBottom:10}}>
                         <Text style={styles.leftText}>유형 선택</Text>
@@ -218,10 +249,10 @@ const WorkScheduleAddScreen = ({navigation}) => {
                         <Text style={styles.leftText}>시작</Text>
                         <View style={{flexDirection:'row'}}>
                             <TouchableOpacity onPress={() => {setStartDatePicker(true)}} style={{height:30}}>
-                                {workSchedule.startDate == "" ? <Text style={styles.pickerPlaceholder}>날짜</Text> : <Text style={styles.valueText}>{moment(workSchedule.startDate).format('YYYY-MM-DD')}</Text>}
+                                {workSchedule.startDate == "" ? <Text style={styles.pickerPlaceholder}>날짜</Text> : <Text style={styles.valueText}>{workSchedule.startDate}</Text>}
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => {setStartTimePicker(true)}}  style={{height:30}}>
-                                {workSchedule.startTime == "" ? <Text style={styles.pickerPlaceholder}>시간</Text> : <Text style={styles.valueText}>{moment(workSchedule.startTime).format('HH:mm')}</Text>}
+                                {workSchedule.startTime == "" ? <Text style={styles.pickerPlaceholder}>시간</Text> : <Text style={styles.valueText}>{workSchedule.startTime}</Text>}
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -229,10 +260,10 @@ const WorkScheduleAddScreen = ({navigation}) => {
                         <Text style={styles.leftText}>종료</Text>
                         <View style={{flexDirection:'row'}}>
                             <TouchableOpacity onPress={() => {setEndDatePicker(true)}} style={{height:30}}>
-                                {workSchedule.endDate == "" ? <Text style={styles.pickerPlaceholder}>날짜</Text> : <Text style={styles.valueText}>{moment(workSchedule.endDate).format('YYYY-MM-DD')}</Text>}
+                                {workSchedule.endDate == "" ? <Text style={styles.pickerPlaceholder}>날짜</Text> : <Text style={styles.valueText}>{workSchedule.endDate}</Text>}
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => {setEndTimePicker(true)}}  style={{height:30}}>
-                                {workSchedule.endTime == "" ? <Text style={styles.pickerPlaceholder}>시간</Text> : <Text style={styles.valueText}>{moment(workSchedule.endTime).format('HH:mm')}</Text>}
+                                {workSchedule.endTime == "" ? <Text style={styles.pickerPlaceholder}>시간</Text> : <Text style={styles.valueText}>{workSchedule.endTime}</Text>}
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -246,7 +277,7 @@ const WorkScheduleAddScreen = ({navigation}) => {
                         headerTextIOS="날짜 선택"
                         confirmTextIOS="확인"
                         cancelTextIOS="취소"
-                        onConfirm={(date) => {setWorkSchedule({...workSchedule,startDate:date});setStartDatePicker(false);}}
+                        onConfirm={(date) => {setWorkSchedule({...workSchedule,startDate:moment(date).format("YYYY-MM-DD").toString()});setStartDatePicker(false);}}
                         onCancel={() => {setStartDatePicker(false)}}
                     />
                     <DateTimePickerModal
@@ -258,7 +289,7 @@ const WorkScheduleAddScreen = ({navigation}) => {
                         headerTextIOS="시간 선택"
                         confirmTextIOS="확인"
                         cancelTextIOS="취소"
-                        onConfirm={(time) => {setWorkSchedule({...workSchedule,startTime:time});setStartTimePicker(false);}}
+                        onConfirm={(time) => {setWorkSchedule({...workSchedule,startTime:moment(time).format("hh:mm").toString()});setStartTimePicker(false);}}
                         onCancel={() => {setStartTimePicker(false)}}
                     />
                     <DateTimePickerModal
@@ -270,7 +301,7 @@ const WorkScheduleAddScreen = ({navigation}) => {
                         headerTextIOS="종료 날짜 선택"
                         confirmTextIOS="확인"
                         cancelTextIOS="취소"
-                        onConfirm={(date) => {setWorkSchedule({...workSchedule,endDate:date});setEndDatePicker(false);}}
+                        onConfirm={(date) => {setWorkSchedule({...workSchedule,endDate:moment(date).format("YYYY-MM-DD").toString()});setEndDatePicker(false);}}
                         onCancel={() => {setEndDatePicker(false)}}
                     />
                     <DateTimePickerModal
@@ -282,7 +313,7 @@ const WorkScheduleAddScreen = ({navigation}) => {
                         headerTextIOS="종료 시간 선택"
                         confirmTextIOS="확인"
                         cancelTextIOS="취소"
-                        onConfirm={(time) => {setWorkSchedule({...workSchedule,endTime:time});setEndTimePicker(false);}}
+                        onConfirm={(time) => {setWorkSchedule({...workSchedule,endTime:moment(time).format("hh:mm").toString()});setEndTimePicker(false);}}
                         onCancel={() => {setEndTimePicker(false)}}
                     />
 
@@ -334,7 +365,7 @@ const WorkScheduleAddScreen = ({navigation}) => {
                 </View>
 
                 <View style={styles.section}>
-                    <TextInput style={{height:200}} placeholder="내용을 입력하세요" multiline  onChangeText={(value) => onChangeContent(value)}/>
+                    <TextInput autoCapitalize="none" style={{height:200}} placeholder="내용을 입력하세요" multiline={true} value={workSchedule.content} onChangeText={(value) => onChangeContent(value)}/>
                 </View>
 
             </ScrollView>
@@ -344,6 +375,13 @@ const WorkScheduleAddScreen = ({navigation}) => {
                     일정 추가가 완료되었습니다
                 </Dialog.Description>
                 <Dialog.Button label="확인" onPress={() => {navigation.goBack();}}/>
+            </Dialog.Container>
+            <Dialog.Container visible={error.result === false}>
+                {/*<Dialog.Title>{`완료`}</Dialog.Title>*/}
+                <Dialog.Description>
+                    {error.msg}
+                </Dialog.Description>
+                <Dialog.Button label="확인" onPress={() => {setError({...error,result:null,errorCode:null, msg:""})}}/>
             </Dialog.Container>
         </SafeAreaView>
     );

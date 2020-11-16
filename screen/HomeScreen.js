@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     StatusBar,
     Image,
+    Animated
 } from 'react-native';
 import {useTheme} from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
@@ -18,7 +19,7 @@ import {SliderBox} from 'react-native-image-slider-box';
 import Geolocation from 'react-native-geolocation-service';
 import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import Carousel from 'react-native-snap-carousel';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import {
     Title,
@@ -37,6 +38,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getCommuteStatus, workOut, workIn, initializeForm} from '../store/commute/commute';
 import Dialog from 'react-native-dialog';
 import WorkScheduleAddScreen from './WorkScheduleAddScreen';
+import { useHeaderHeight } from "@react-navigation/stack";
 
 
 async function requestPermission() {
@@ -75,6 +77,27 @@ async function requestPermission() {
 
 
 const HomeScreen = ({navigation}) => {
+    const yOffset = React.useRef(new Animated.Value(0)).current;
+    const yOffset2= React.useRef(new Animated.Value(0)).current;
+    const headerOpacity = yOffset.interpolate({
+        inputRange: [0, 100],
+        outputRange: [0, 1],
+        extrapolate: "clamp",
+    });
+    const hideButton= yOffset.interpolate({
+        inputRange: [0, 100],
+        outputRange: [1, 0],
+        extrapolate: "clamp",
+    });
+
+    const menuButtonImage = yOffset.interpolate({
+        inputRange: [0, 100],
+        outputRange: [require('../asset/image/menu.png'), require('../asset/image/menu_black.png')],
+        extrapolate: "clamp",
+    });
+
+    const height = useHeaderHeight();
+
 
     const dispatch = useDispatch();
     const {colors} = useTheme();
@@ -91,12 +114,14 @@ const HomeScreen = ({navigation}) => {
     const [isAgreeLocation, setIsAgreeLocation] = useState(null);
     const [location, setLocation] = useState(null);
     const [key, setKey] = useState(10);
+    const [scrollPosition, setScrollPosition] = useState(0);
 
     const [commuteInfo, setCommuteInfo] = useState({
         isShow: false,
         type: '',
     });
 
+    const scrollRef = React.useRef();
     const markerRef = React.createRef();
     const markerPointRef = React.createRef();
 
@@ -110,6 +135,7 @@ const HomeScreen = ({navigation}) => {
         reloadLocation();
 
     }, [key]);
+
 
     useLayoutEffect(() => {
     }, []);
@@ -132,6 +158,57 @@ const HomeScreen = ({navigation}) => {
             }
         }
     }, [commute.workIn, commute.workOut, workInLoading, workOutLoading]);
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerStyle: {
+                opacity: 1,
+                backgroundColor: "green",
+            },
+            headerLeft: () => (
+                    <>
+                        <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                        <Animated.Image source={require('../asset/image/menu_black.png')} style={{opacity:headerOpacity,position:'absolute',marginLeft:10}}/>
+                            <Animated.Image source={require('../asset/image/menu.png')} style={{opacity:hideButton,position:'absolute',marginLeft:10}}/>
+                        </TouchableOpacity>
+                    </>
+                // <Icon.Button name="ios-menu" color={menuButtonColor} size={25} backgroundColor='transparent' underlayColor='transparent' onPress={() => navigation.openDrawer()}></Icon.Button>
+            ),
+            headerBackground: () => (
+                <Animated.View
+                    style={{
+                        // opacity:0,
+                        backgroundColor: "white",
+                        ...StyleSheet.absoluteFillObject,
+                        opacity: headerOpacity,
+                    }}
+                />
+            ),
+            headerTransparent: true,
+        });
+    }, [headerOpacity, navigation]);
+
+    //
+    // useLayoutEffect(() => {
+    //     // navigation.setOptions({
+    //     //     headerShown: false,
+    //     // });
+    //     if(scrollPosition > 100){
+    //         navigation.setOptions({
+    //             headerTransparent: false,
+    //             transition: 'opacity 2s 1s ease-in',
+    //             headerTintColor: '#fff',
+    //         });
+    //     }else{
+    //         navigation.setOptions({
+    //             headerTransparent: true,
+    //             transition: 'opacity 2s 1s ease'
+    //         });
+    //     }
+    //
+    //     console.log(scrollPosition)
+    //
+    // }, [scrollPosition]);
 
     useLayoutEffect(() => {
 
@@ -188,7 +265,7 @@ const HomeScreen = ({navigation}) => {
     };
 
     const showWorkScheduleModal = () => {
-        navigation.push('workScheduleAdd')
+        navigation.push('workScheduleAdd');
         // navigation.push({
         //     component: {
         //         name: WorkScheduleAddScreen,
@@ -207,7 +284,7 @@ const HomeScreen = ({navigation}) => {
         //         },
         //     },
         // });
-    }
+    };
     const renderItem = ({item, index}) => {
         return (
             <View>
@@ -223,7 +300,28 @@ const HomeScreen = ({navigation}) => {
     return (
         <Animatable.View animation="fadeInUp" style={{flex: 1, flexDirection: 'row'}}>
             {/*<StatusBar translucent backgroundColor='transparent' />*/}
-            <ScrollView contentInsetAdjustmentBehavior="never">
+            <Animated.ScrollView ref={scrollRef}
+                                 onContentSizeChange={() => {
+                                     // 여기다가 어떤 경우에 스크롤을 하면 될지에 대한 조건문을 추가하면 된다.
+                                     console.log(scrollRef.current)
+                                     // scrollRef.current.scrollTo({ y: 0, animated: true, });
+                                 }}
+                                 contentInsetAdjustmentBehavior="never"
+                        contentContainerStyle={{ paddingTop: -height }}
+                        onScroll={Animated.event(
+                            [
+                                {
+                                    nativeEvent: {
+                                        contentOffset: {
+                                            y: yOffset,
+                                        },
+                                    },
+                                },
+                            ],
+                            { useNativeDriver: false }
+                        )}
+                        scrollEventThrottle={16}
+            >
                 {topSlideImage != null && (
                     <View style={{width: wp('100%'), height: 220}}>
                         <Carousel
@@ -433,7 +531,7 @@ const HomeScreen = ({navigation}) => {
                     )}
                 </View>
 
-                <ScheduleCalendars/>
+                <ScheduleCalendars scrollRef={scrollRef}/>
                 <Dialog.Container visible={commuteInfo.isShow}>
                     <Dialog.Title>{`${commuteInfo.type} 완료`}</Dialog.Title>
                     <Dialog.Description>
@@ -443,10 +541,12 @@ const HomeScreen = ({navigation}) => {
                         setCommuteInfo({...commuteInfo, isShow: false});
                     }}/>
                 </Dialog.Container>
-            </ScrollView>
+            </Animated.ScrollView>
             {/*<TouchableOpacity onPress={(e) => {navigation.navigate("workScheduleAdd")}}>*/}
-            <TouchableOpacity onPress={(e) => {showWorkScheduleModal();}} style={[styles.plusButton,{zIndex:9999}]}>
-                <View style={[styles.plusButton,{backgroundColor: colors.ridaTheme}]}>
+            <TouchableOpacity onPress={(e) => {
+                showWorkScheduleModal();
+            }} style={[styles.plusButton, {zIndex: 9999}]}>
+                <View style={[styles.plusButton, {backgroundColor: colors.ridaTheme}]}>
                     <Feather
                         name="plus"
                         color='#fff'

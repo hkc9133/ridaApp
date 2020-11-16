@@ -27,12 +27,12 @@ const work = {key: 'massage', color: 'blue', selectedDotColor: 'blue'};
 const vacation = {key: 'workout', color: 'green'};
 
 const theme = {
-    // backgroundColor: '#ffffff',
-    // calendarBackground: '#ffffff',
+    backgroundColor: '#ffffff',
+    calendarBackground: '#ffffff',
     textSectionTitleColor: 'black',
     // textSectionTitleDisabledColor: '#d9e1e8',
     selectedDayBackgroundColor: 'transparent',
-    selectedDayTextColor:'#2d4150',
+    // selectedDayTextColor:'#2d4150',
     todayTextColor:'#0ec269',
     dayTextColor: '#2d4150',
     // textDisabledColor: '#d9e1e8',
@@ -71,11 +71,11 @@ const theme = {
         today:{
             backgroundColor:'blue'
         }
-    }
+    },
 }
 
 
-const ScheduleCalendars = () => {
+const ScheduleCalendars = ({scrollRef}) => {
 
     const {colors} = useTheme();
     const dispatch = useDispatch();
@@ -185,7 +185,7 @@ const ScheduleCalendars = () => {
                                              schedule={schedule} initSchedule={initSchedule} selectDay={selectDay}/>
                     </>)
                 : (
-                    <WeekCalendars theme={theme}/>
+                    <WeekCalendars scrollRef={scrollRef}/>
                 )}
 
 

@@ -28,6 +28,7 @@ const ScheduleDetailItem = ({item}) => {
         }
 
     },[])
+
     return (
         <View style={{marginBottom:10}}>
             <View style={{flex:1,flexDirection:'row'}}>

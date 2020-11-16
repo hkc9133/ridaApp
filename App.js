@@ -80,11 +80,11 @@ const App = () => {
     //     }).error((e) => {
     //       console.log(e)
     //     })
-    AsyncStorage.getItem('COMPANY_ID').then((value)=>{
-      if(!authCheckLoading && user.user.login && (company.selectCompany.companyId !== null || value !== null)){
-        setCompany()
-      }
-    });
+    // AsyncStorage.getItem('COMPANY_ID').then((value)=>{
+    //   if(!authCheckLoading && user.user.login && (company.selectCompany.companyId !== null || value !== null)){
+    //     setCompany()
+    //   }
+    // });
 
   },[user,company])
 
@@ -207,10 +207,10 @@ const App = () => {
                 {/*    <ScrollView*/}
                 {/*        contentInsetAdjustmentBehavior="automatic"*/}
                 {/*        style={styles.scrollView}>*/}
-                  {company.selectCompany.companyId === null &&
+                  {company.selectCompany.companyId == null &&
                       <SelectCompanyScreen/>
                   }
-                  {company.selectCompany.companyId != null && company.selectCompany.companyId !== false && (
+                  {company.selectCompany.companyId != null && company.selectCompany.companyId != false && (
                       <CompanyRouter setCompany={setCompany}>
                         <Drawer.Navigator drawerContent={props => <DrawerContent {...props} setCompany={setCompany} />} drawerStyle={{flexDirection: 'row',
 

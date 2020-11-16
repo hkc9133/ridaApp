@@ -9,14 +9,14 @@ const CompanyRouter = (props) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        CookieManager.get(url)
-            .then((cookies) => {
-                if(cookies['COMPANY_ID']['value'] == '' || cookies['COMPANY_ID']['value'] == null){
-                    initCompany();
-                }
-            }).catch((a) =>{
-            initCompany();
-        });
+        // CookieManager.get(url)
+        //         //     .then((cookies) => {
+        //         //         if(cookies['COMPANY_ID']['value'] == '' || cookies['COMPANY_ID']['value'] == null){
+        //         //             initCompany();
+        //         //         }
+        //         //     }).catch((a) =>{
+        //         //     initCompany();
+        //         // });
     },[])
 
     const initCompany = async () => {

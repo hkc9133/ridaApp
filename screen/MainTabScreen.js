@@ -76,13 +76,13 @@ const HomeStackScreen = ({navigation}) => (
         headerStyle: {
             backgroundColor: '#009387',
         },
-        headerTransparent: true,
+        // headerTransparent: true,
         headerTintColor: '#fff',
         headerTitleStyle: {
         fontWeight: 'bold',
         },
     }} mode='modal'>
-        <HomeStack.Screen name="Home" component={HomeScreen} options={{
+        <HomeStack.Screen name="Home" component={HomeScreen}headerMode="screen" options={{
         title:'',
         headerLeft: () => (
             <Icon.Button name="ios-menu" size={25} backgroundColor='transparent' underlayColor='transparent' onPress={() => navigation.openDrawer()}></Icon.Button>

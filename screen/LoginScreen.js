@@ -24,6 +24,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {authCheck, login, initialize} from '../store/auth/auth';
 import AsyncStorage from '@react-native-community/async-storage';
 import {getSchedule} from '../store/schedule/schedule';
+import {initializeCompany} from '../store/company/company';
 
 const LoginScreen = ({navigation}) => {
     const dispatch = useDispatch();
@@ -114,6 +115,7 @@ const LoginScreen = ({navigation}) => {
         if (data.isValidUser && data.isValidPassword) {
             // AsyncStorage.removeItem('COMPANY_ID');
             saveId();
+            // dispatch(initializeCompany());
             dispatch(login(loginData));
         }
     };
