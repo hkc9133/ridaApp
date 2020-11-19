@@ -19,6 +19,7 @@ import {CheckBox} from 'react-native-elements';
 import {useTheme} from 'react-native-paper';
 import {login, signup} from '../store/auth/auth';
 import {useDispatch, useSelector} from 'react-redux';
+import CustomText from '../component/common/CustomText';
 
 const SignInScreen = ({navigation}) => {
 
@@ -245,7 +246,7 @@ const SignInScreen = ({navigation}) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor='#009387' barStyle="dark-content"/>
+            <StatusBar backgroundColor='#ffffff' barStyle="dark-content"/>
             {/*<View>*/}
             {/*    <Feather*/}
             {/*        name="chevron-left"*/}
@@ -262,9 +263,9 @@ const SignInScreen = ({navigation}) => {
                     <View style={{paddingHorizontal: 40}}>
 
                     <View style={styles.header}>
-                        <Text style={styles.text_header}>기본정보</Text>
+                        <CustomText style={styles.text_header}>기본정보</CustomText>
                     </View>
-                    <Text style={[styles.text_footer,{marginTop:25}]}>아이디</Text>
+                    <CustomText style={[styles.text_footer,{marginTop:25}]}>아이디</CustomText>
                     <View style={styles.action}>
                         <TextInput
                             placeholder="아이디"
@@ -286,16 +287,16 @@ const SignInScreen = ({navigation}) => {
                     </View>
                     { data.isValidUser ? null :
                         <Animatable.View animation="fadeInLeft" duration={500}>
-                            <Text style={styles.errorMsg}>아이디는 필수입니다</Text>
+                            <CustomText style={styles.errorMsg}>아이디는 필수입니다</CustomText>
                         </Animatable.View>
                     }
                     { auth.signup.error.userId === null ? null :
                         <Animatable.View animation="fadeInLeft" duration={500}>
-                            <Text style={styles.errorMsg}>{auth.signup.error.userId}</Text>
+                            <CustomText style={styles.errorMsg}>{auth.signup.error.userId}</CustomText>
                         </Animatable.View>
                     }
 
-                    <Text style={[styles.text_footer,{marginTop: 22}]}>이름</Text>
+                    <CustomText style={[styles.text_footer,{marginTop: 22}]}>이름</CustomText>
                     <View style={styles.action}>
                         <TextInput
                             placeholder="홍길동"
@@ -317,18 +318,18 @@ const SignInScreen = ({navigation}) => {
                     </View>
                         { data.isValidName ? null :
                             <Animatable.View animation="fadeInLeft" duration={500}>
-                                <Text style={styles.errorMsg}>이름은 필수입니다</Text>
+                                <CustomText style={styles.errorMsg}>이름은 필수입니다</CustomText>
                             </Animatable.View>
                         }
                         { auth.signup.error.userName === null  ? null :
                             <Animatable.View animation="fadeInLeft" duration={500}>
-                                <Text style={styles.errorMsg}>{auth.signup.error.userName}</Text>
+                                <CustomText style={styles.errorMsg}>{auth.signup.error.userName}</CustomText>
                             </Animatable.View>
                         }
 
-                    <Text style={[styles.text_footer, {
+                    <CustomText style={[styles.text_footer, {
                         marginTop: 22
-                    }]}>생년월일</Text>
+                    }]}>생년월일</CustomText>
                     <View style={{  justifyContent: 'space-between', flexDirection: 'row',flex: 1,
                         marginTop: 10,
                         paddingBottom: 5}}>
@@ -340,7 +341,7 @@ const SignInScreen = ({navigation}) => {
                             keyboardType={'numeric'}
 
                         />
-                        <Text style={{marginHorizontal:5}}> - </Text>
+                        <CustomText style={{marginHorizontal:5}}> - </CustomText>
                         <TextInput
                             placeholder="앞 1자리"
                             secureTextEntry={data.secureTextEntry ? true : false}
@@ -351,9 +352,9 @@ const SignInScreen = ({navigation}) => {
                         />
                     </View>
 
-                    <Text style={[styles.text_footer, {
+                    <CustomText style={[styles.text_footer, {
                         marginTop: 22
-                    }]}>휴대전화</Text>
+                    }]}>휴대전화</CustomText>
                     <View style={{  justifyContent: 'space-between', flexDirection: 'row',flex: 1,
                         marginTop: 10,
                         paddingBottom: 5}}>
@@ -365,7 +366,7 @@ const SignInScreen = ({navigation}) => {
                             onChangeText={(value) => onChangePhoneValue01(value)}
 
                         />
-                        <Text style={{marginHorizontal:5}}> - </Text>
+                        <CustomText style={{marginHorizontal:5}}> - </CustomText>
                         <TextInput
                             style={styles.textInputHalf}
                             autoCapitalize="none"
@@ -374,7 +375,7 @@ const SignInScreen = ({navigation}) => {
                             onChangeText={(value) => onChangePhoneValue02(value)}
 
                         />
-                        <Text style={{marginHorizontal:5}}> - </Text>
+                        <CustomText style={{marginHorizontal:5}}> - </CustomText>
                         <TextInput
                             style={styles.textInputHalf}
                             autoCapitalize="none"
@@ -386,19 +387,19 @@ const SignInScreen = ({navigation}) => {
                     </View>
                         { data.isValidPhone ? null :
                             <Animatable.View animation="fadeInLeft" duration={500}>
-                                <Text style={styles.errorMsg}>전화번호</Text>
+                                <CustomText style={styles.errorMsg}>전화번호</CustomText>
                             </Animatable.View>
                         }
                         { auth.signup.error.userPhone === null  ? null :
                             <Animatable.View animation="fadeInLeft" duration={500}>
-                                <Text style={styles.errorMsg}>{auth.signup.error.userPhone}</Text>
+                                <CustomText style={styles.errorMsg}>{auth.signup.error.userPhone}</CustomText>
                             </Animatable.View>
                         }
 
 
-                    <Text style={[styles.text_footer, {
+                    <CustomText style={[styles.text_footer, {
                         marginTop: 22
-                    }]}>비밀번호</Text>
+                    }]}>비밀번호</CustomText>
                     <View style={styles.action}>
                         <TextInput
                             placeholder="비밀번호"
@@ -424,12 +425,12 @@ const SignInScreen = ({navigation}) => {
                             }
                         </TouchableOpacity>
                     </View>
-                    <Text style={[styles.text_footer, {
+                    <CustomText style={[styles.text_footer, {
                         marginTop: 6
-                    }]}>영문 대,소문자와 숫자, 특수문자 포함된 8 ~ 20자</Text>
-                    <Text style={[styles.text_footer, {
+                    }]}>영문 대,소문자와 숫자, 특수문자 포함된 8 ~ 20자</CustomText>
+                    <CustomText style={[styles.text_footer, {
                         marginTop: 22
-                    }]}>비밀번호 확인</Text>
+                    }]}>비밀번호 확인</CustomText>
                     <View style={styles.action}>
                         <TextInput
                             placeholder="비밀번호를 다시 입력해주세요"
@@ -459,18 +460,18 @@ const SignInScreen = ({navigation}) => {
                     </View>
                         { data.isValidPassword ? null :
                             <Animatable.View animation="fadeInLeft" duration={500}>
-                                <Text style={styles.errorMsg}>비밀번호확인</Text>
+                                <CustomText style={styles.errorMsg}>비밀번호확인</CustomText>
                             </Animatable.View>
                         }
                         { auth.signup.error.userPassword  === null ? null :
                             <Animatable.View animation="fadeInLeft" duration={500}>
-                                <Text style={styles.errorMsg}>{auth.signup.error.userPassword}</Text>
+                                <CustomText style={styles.errorMsg}>{auth.signup.error.userPassword}</CustomText>
                             </Animatable.View>
                         }
 
-                    <Text style={[styles.text_footer, {
+                    <CustomText style={[styles.text_footer, {
                         marginTop: 22
-                    }]}>약관동의</Text>
+                    }]}>약관동의</CustomText>
                     <View style={{flex: 1,
                         marginTop: 10,
                         paddingBottom: 5,}}>
@@ -500,14 +501,14 @@ const SignInScreen = ({navigation}) => {
                                 containerStyle={{backgroundColor:'#fff',borderWidth:0,marginLeft:0,padding:0,height:30}}
                             />
                             <TouchableOpacity style={{height:30,justifyContent:'center'}}>
-                                <Text>
+                                <CustomText>
                                     전문보기
                                     <Feather
                                         name="chevron-right"
                                         color="grey"
                                         size={16}
                                     />
-                                </Text>
+                                </CustomText>
                             </TouchableOpacity>
                         </View>
                         <View style={{
@@ -525,14 +526,14 @@ const SignInScreen = ({navigation}) => {
                                 containerStyle={{backgroundColor:'#fff',borderWidth:0,marginLeft:0,padding:0,height:30}}
                             />
                             <TouchableOpacity style={{height:30,justifyContent:'center'}}>
-                                <Text>
+                                <CustomText>
                                     전문보기
                                     <Feather
                                         name="chevron-right"
                                         color="grey"
                                         size={16}
                                     />
-                                </Text>
+                                </CustomText>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -543,9 +544,9 @@ const SignInScreen = ({navigation}) => {
                             style={styles.signIn}
                             onPress={() => {signUpHandle();}}
                         >
-                                <Text style={[styles.textSign, {
+                                <CustomText style={[styles.textSign, {
                                     color:'#fff'
-                                }]}>회원가입</Text>
+                                }]}>회원가입</CustomText>
                         </TouchableOpacity>
 
                         {/*<TouchableOpacity*/}

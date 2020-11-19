@@ -3,6 +3,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 import moment from 'moment';
 import * as Animatable from 'react-native-animatable';
+import CustomText from '../common/CustomText';
 
 const scheduleTypeList = [
     {
@@ -39,7 +40,6 @@ const WeekScheduleDetailItem = ({item}) => {
     }
 
     useEffect(() => {
-        console.log(item)
         switch (item.event) {
             case 'WORK_IN':
                 setType("출근");
@@ -76,14 +76,16 @@ const WeekScheduleDetailItem = ({item}) => {
         <Animatable.View animation="fadeIn" duration={1800} useNativeDriver={true} style={styles.item}>
             <View style={{flex:1,flexDirection:'row'}}>
                 <View style={{width:10,height:10,backgroundColor:color,borderRadius:5,alignSelf:'center',justifyContent:'center'}}></View>
-                <Text style={{marginLeft:10,fontWeight:'600'}}>{type}</Text>
-                <Text style={{marginLeft:5,fontWeight:'600'}}>{item.title}</Text>
+                <CustomText style={{marginLeft:10,fontWeight:'600'}}>{type}</CustomText>
+                <CustomText style={{marginLeft:5,fontWeight:'600'}}>{item.title}</CustomText>
             </View>
             <View style={{marginTop:5}}>
-                <Text style={{fontSize:16}}>{`${editDateFormat(item.date)}`}</Text>
-                <View>
-                    <Text style={{marginTop:5,fontSize:16}}>{item.content}</Text>
-                </View>
+                <CustomText style={{fontSize:16}}>{`${editDateFormat(item.date)}`}</CustomText>
+                {item.content != null &&(
+                    <View>
+                        <CustomText style={{marginTop:5,fontSize:16}}>{item.content}</CustomText>
+                    </View>
+                )}
             </View>
         </Animatable.View>
     );

@@ -19,6 +19,7 @@ import {getRangeMemberSchedule} from '../../store/schedule/schedule';
 import WeekScheduleDetailItem from './WeekScheduleDetailItem';
 import {toHHMMSS} from '../../util/DateUtil'
 import WeekCalendar from 'react-native-calendars/src/expandableCalendar/weekCalendar';
+import CustomText from '../common/CustomText';
 
 
 // const testIDs = require('../testIDs');
@@ -240,7 +241,7 @@ const WeekCalendars = ({item,scrollRef}) => {
     const renderEmptyItem = () => {
         return (
             <View style={styles.emptyItem}>
-                <Text style={styles.emptyItemText}>No Events Planned</Text>
+                <CustomText style={styles.emptyItemText}>No Events Planned</CustomText>
             </View>
         );
     };
@@ -371,10 +372,10 @@ const WeekCalendars = ({item,scrollRef}) => {
             <Animatable.View key={totalWorkTime} animation="fadeIn" style={{backgroundColor:'white'}}>
                 <View style={{backgroundColor:'#fafafa',height:220,flexDirection:'column',alignItems:'center', borderTopRightRadius:40,borderTopLeftRadius:40,borderColor:'#E5E5E5',borderTopWidth:1,borderLeftWidth:1,borderRightWidth:1}}>
                     <View style={{backgroundColor:colors.ridaTheme,width:80,height:30,justifyContent:'center',alignItems:'center',marginTop:70,borderRadius:22}}>
-                        <Text style={{color:'#fff',fontWeight:'500'}}>TOTAL</Text>
+                        <CustomText style={{color:'#fff',fontWeight:'500'}}>TOTAL</CustomText>
                     </View>
                     <View style={{justifyContent:'center',alignItems:'center',marginTop:20,width:200}}>
-                        <Text style={{color:'black',fontWeight:'600',fontSize:45,}}>{toHHMMSS(totalWorkTime)}</Text>
+                        <CustomText style={{color:'black',fontWeight:'600',fontSize:45,}}>{toHHMMSS(totalWorkTime)}</CustomText>
                     </View>
                 </View>
             </Animatable.View>

@@ -7,6 +7,9 @@ import {applyMiddleware, createStore} from 'redux';
 import rootReducer, {rootSaga} from './store';
 import SplashScreen from 'react-native-splash-screen';
 import {
+    Text
+} from 'react-native';
+import {
     NavigationContainer,
     DefaultTheme as NavigationDefaultTheme,
     DarkTheme as NavigationDarkTheme
@@ -36,6 +39,9 @@ const CustomDefaultTheme = {
         background: '#ffffff',
         text: '#333333',
         ridaTheme:'#0ec269'
+    },
+    fonts:{
+        noto:'NotoSansKR-Regular'
     }
 }
 

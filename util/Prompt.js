@@ -8,6 +8,7 @@ import {
     View
 } from 'react-native';
 import styles from './styles';
+import CustomText from '../component/common/CustomText';
 
 export default class Prompt extends Component {
     static propTypes = {
@@ -117,9 +118,9 @@ export default class Prompt extends Component {
                 <View style={styles.dialogOverlay}/>
                 <View style={[styles.dialogContent, { borderColor }, promptStyle]}>
                     <View style={[styles.dialogTitle, { borderColor }]}>
-                        <Text style={[styles.dialogTitleText, titleStyle]}>
+                        <CustomText style={[styles.dialogTitleText, titleStyle]}>
                             { title }
-                        </Text>
+                        </CustomText>
                     </View>
                     <View style={styles.dialogBody}>
                         <TextInput
@@ -142,16 +143,16 @@ export default class Prompt extends Component {
                     <View style={[styles.dialogFooter, { borderColor }]}>
                         <TouchableWithoutFeedback onPress={this._onCancelPress}>
                             <View style={[styles.dialogAction, buttonStyle, cancelButtonStyle]}>
-                                <Text style={[styles.dialogActionText, buttonTextStyle, cancelButtonTextStyle]}>
+                                <CustomText style={[styles.dialogActionText, buttonTextStyle, cancelButtonTextStyle]}>
                                     {cancelText}
-                                </Text>
+                                </CustomText>
                             </View>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={this._onSubmitPress}>
                             <View style={[styles.dialogAction, buttonStyle, submitButtonStyle]}>
-                                <Text style={[styles.dialogActionText, buttonTextStyle, submitButtonTextStyle]}>
+                                <CustomText style={[styles.dialogActionText, buttonTextStyle, submitButtonTextStyle]}>
                                     {submitText}
-                                </Text>
+                                </CustomText>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>

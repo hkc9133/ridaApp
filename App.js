@@ -51,6 +51,10 @@ import {initializeCompany, settingCompany} from './store/company/company';
 // sagaMiddleware.run(rootSaga);
 const Drawer = createDrawerNavigator();
 
+//핸드폰 설정에서 글자 크기 조절 disable
+Text.defaultProps = Text.defaultProps || {}
+Text.defaultProps.allowFontScaling = false;
+// Text.defaultProps.style =  { color: 'NotoSansKR-Regular' }
 
 const App = () => {
   const [isSplashScreen, setIsSplashScreen] = useState(false)
@@ -130,29 +134,30 @@ const App = () => {
   }
 
   async function setCompany() {
-        CookieManager.get(url)
-            .then((cookies) => {
-              if(cookies['COMPANY_ID']['value'] == '' || cookies['COMPANY_ID']['value'] == null){
-                dispatch(initializeCompany())
-              }else{
-                dispatch(settingCompany(cookies['COMPANY_ID']['value']))
-              }
-            }).catch((a) =>{
-          dispatch(initializeCompany())
-        });
+    dispatch(initializeCompany())
+        // CookieManager.get(url)
+        //     .then((cookies) => {
+        //       if(cookies['COMPANY_ID']['value'] == '' || cookies['COMPANY_ID']['value'] == null){
+        //         dispatch(initializeCompany())
+        //       }else{
+        //         dispatch(settingCompany(cookies['COMPANY_ID']['value']))
+        //       }
+        //     }).catch((a) =>{
+        //   dispatch(initializeCompany())
+        // });
 
 
-        try {
-          const value = await AsyncStorage.getItem('COMPANY_ID');
-          if (value !== null) {
-
-            setSelectCompany(value);
-          }else{
-            setSelectCompany(false);
-          }
-        } catch (error) {
-          setSelectCompany(false);
-        }
+        // try {
+        //   const value = await AsyncStorage.getItem('COMPANY_ID');
+        //   if (value !== null) {
+        //
+        //     setSelectCompany(value);
+        //   }else{
+        //     setSelectCompany(false);
+        //   }
+        // } catch (error) {
+        //   setSelectCompany(false);
+        // }
   }
 
   // const setCompany = async () => {
@@ -207,13 +212,12 @@ const App = () => {
                 {/*    <ScrollView*/}
                 {/*        contentInsetAdjustmentBehavior="automatic"*/}
                 {/*        style={styles.scrollView}>*/}
-                  {company.selectCompany.companyId == null &&
+                  {company.selectCompany.companyId == null && user.user.login &&
                       <SelectCompanyScreen/>
                   }
                   {company.selectCompany.companyId != null && company.selectCompany.companyId != false && (
                       <CompanyRouter setCompany={setCompany}>
                         <Drawer.Navigator drawerContent={props => <DrawerContent {...props} setCompany={setCompany} />} drawerStyle={{flexDirection: 'row',
-
                           justifyContent: 'flex-start',backgroundColor:'transparent',alignItems:'center',width:"70%"}}>
                           <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
                           <Drawer.Screen name="SupportScreen" component={SupportScreen} />

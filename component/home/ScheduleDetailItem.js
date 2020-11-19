@@ -3,6 +3,7 @@ import {ScrollView, View} from 'react-native';
 import {Text} from 'react-native-paper';
 import moment from 'moment';
 import {useTheme} from '@react-navigation/native';
+import CustomText from '../common/CustomText';
 
 const ScheduleDetailItem = ({item}) => {
 
@@ -23,20 +24,40 @@ const ScheduleDetailItem = ({item}) => {
                 break;
             case 'WORK_OUT':
                 setTitle("퇴근");
-                setColor("red")
+                setColor("#0ec269")
                 break;
+            case 'WO':
+                setTitle("업무");
+                setColor("#547980")
+                break;
+            case 'IT':
+                setTitle("중요");
+                setColor("#45ADA8")
+                break;
+            case 'BT':
+                setTitle("출장");
+                setColor("#9DE0AD")
+                break;
+            case 'SA':
+                setTitle("영압");
+                setColor("#E5FCC2")
+                break;
+            case 'VC':
+                setTitle("휴가");
+                setColor("#594F4F")
+                break
         }
 
     },[])
 
     return (
-        <View style={{marginBottom:10}}>
+        <View style={{marginBottom:10,padding:10}}>
             <View style={{flex:1,flexDirection:'row'}}>
                 <View style={{width:10,height:10,backgroundColor:color,borderRadius:5,alignSelf:'center',justifyContent:'center'}}></View>
-                <Text style={{marginLeft:10,fontWeight:'600'}}>{title != null && title}</Text>
+                <CustomText style={{marginLeft:10,fontWeight:'600'}}>{title != null && title}</CustomText>
             </View>
-            <View style={{marginTop:5}}>
-                <Text style={{marginLeft:20,color:"#919191"}}>{`${editDateFormat(item.date)}`}</Text>
+            <View style={{marginTop:0}}>
+                <CustomText style={{marginLeft:20,color:"#919191"}}>{`${editDateFormat(item.date)}`}</CustomText>
             </View>
         </View>
     );

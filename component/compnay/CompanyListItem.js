@@ -6,17 +6,34 @@ import {
     Paragraph,
     Card,
 } from 'react-native-paper';
+import CustomText from '../common/CustomText';
 
 const CompanyListItem = ({item, handleSelectCompany}) => {
     useEffect(() => {
-        console.log(item);
-
     }, []);
+
+    const setRoleText = (role) =>{
+        switch (role) {
+            case 'ROLE_SUPER':
+                return "최고 관리자";
+                break;
+            case 'ROLE_TOTAL':
+                return "총괄 관리자";
+                break;
+            case 'ROLE_BRANCH':
+                return "조직 관리자";
+                break;
+            case 'ROLE_EMPLOYEE':
+                return "사원";
+                break;
+        }
+    }
+
     return (
         <TouchableOpacity onPress={() => handleSelectCompany(item.companyId)}>
             <View style={{
                 height: 100,
-                borderWidth: 1,
+                borderWidth:1.5,
                 marginTop: 15,
                 flex: 1,
                 flexDirection: 'row',
@@ -32,8 +49,8 @@ const CompanyListItem = ({item, handleSelectCompany}) => {
                 // elevation: 5,
             }}>
                 <View style={{justifyContent: 'flex-start', alignItems: 'baseline', alignSelf: 'center'}}>
-                    <Text style={{fontSize: 17, marginBottom: 5}}>{item.companyName}({item.memberName})</Text>
-                    <Text style={{color: '#919191'}}>{item.memberRole}</Text>
+                    <CustomText style={{fontSize: 17}}>{item.companyName}({item.memberName})</CustomText>
+                    <CustomText style={{color: '#919191'}}>{setRoleText(item.memberRole)}</CustomText>
                 </View>
                 <View style={{justifyContent: 'flex-end', alignSelf: 'center'}}>
                     <Feather

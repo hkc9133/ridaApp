@@ -38,6 +38,9 @@ const initialState = {
         result:null,
         error:null
     },
+    logOut:{
+        result:null,
+    },
     signup:{
         result:null,
         error:{
@@ -74,6 +77,15 @@ const auth = handleActions(
                 draft.user.login = false;
                 draft.login.result = false;
                 draft.login.error = error.response.data;
+                // AsyncStorage.clear()
+            }),
+        [LOGOUT_SUCCESS]: (state, {payload: data}) =>
+            produce(state, draft => {
+                draft.logOut.result = true;
+            }),
+        [LOGOUT_FAILURE]: (state, {payload: error}) =>
+            produce(state, draft => {
+                draft.logOut.result = false;
                 // AsyncStorage.clear()
             }),
         [SIGNUP_SUCCESS]: (state, {payload: data}) =>

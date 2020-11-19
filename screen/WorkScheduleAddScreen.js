@@ -8,6 +8,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import {useDispatch, useSelector} from 'react-redux';
 import {addSchedule, initializeForm} from '../store/schedule/schedule';
 import Dialog from 'react-native-dialog';
+import CustomText from '../component/common/CustomText';
 
 const scheduleTypeList = [
     {
@@ -96,7 +97,7 @@ const WorkScheduleAddScreen = ({navigation}) => {
                 fontWeight: 'normal'
             },
             headerLeft:() => (<TouchableOpacity onPress={() => {navigation.goBack();}}><Text style={{padding:8,fontSize:16,fontWeight:'500'}}>닫기</Text></TouchableOpacity>),
-            headerRight:() => (<TouchableOpacity onPress={() => {submitSchedule();}} disabled={!isConfirm} di><Text style={{padding:8,fontSize:16,fontWeight:'500',color: !isConfirm ? "gray" : 'black'}}>저장</Text></TouchableOpacity>)
+            headerRight:() => (<TouchableOpacity onPress={() => {submitSchedule();}} disabled={!isConfirm} di><CustomText style={{padding:8,fontSize:16,fontWeight:'500',color: !isConfirm ? "gray" : 'black'}}>저장</CustomText></TouchableOpacity>)
         });
     }, [navigation,isConfirm,workSchedule]);
 
@@ -183,9 +184,9 @@ const WorkScheduleAddScreen = ({navigation}) => {
                         <TextInput value={workSchedule.title} placeholder="제목을 입력하세요" value={workSchedule.title}  style={styles.textInput} onChangeText={(value) => onChangeTitle(value)}/>
                     </View>
                     <View style={{flexDirection:'row',justifyContent: 'space-between',marginBottom:10}}>
-                        <Text style={styles.leftText}>유형 선택</Text>
+                        <CustomText style={styles.leftText}>유형 선택</CustomText>
                         <TouchableOpacity onPress={() => {scheduleTypeRef.current.show();}}>
-                            {workSchedule.scheduleType == "" ? <Text style={styles.pickerPlaceholder}>유형</Text> : <Text style={styles.valueText}>{scheduleTypeList.filter(type => type.value == workSchedule.scheduleType)[0].label}</Text>}
+                            {workSchedule.scheduleType == "" ? <CustomText style={styles.pickerPlaceholder}>유형</CustomText> : <Text style={styles.valueText}>{scheduleTypeList.filter(type => type.value == workSchedule.scheduleType)[0].label}</Text>}
                         </TouchableOpacity>
                         <ReactNativePickerModule
                             pickerRef={scheduleTypeRef}
@@ -246,24 +247,24 @@ const WorkScheduleAddScreen = ({navigation}) => {
                         {/*/>*/}
                     </View>
                     <View style={{flexDirection:'row',justifyContent: 'space-between',marginBottom:10}}>
-                        <Text style={styles.leftText}>시작</Text>
+                        <CustomText style={styles.leftText}>시작</CustomText>
                         <View style={{flexDirection:'row'}}>
                             <TouchableOpacity onPress={() => {setStartDatePicker(true)}} style={{height:30}}>
-                                {workSchedule.startDate == "" ? <Text style={styles.pickerPlaceholder}>날짜</Text> : <Text style={styles.valueText}>{workSchedule.startDate}</Text>}
+                                {workSchedule.startDate == "" ? <CustomText style={styles.pickerPlaceholder}>날짜</CustomText> : <CustomText style={styles.valueText}>{workSchedule.startDate}</CustomText>}
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => {setStartTimePicker(true)}}  style={{height:30}}>
-                                {workSchedule.startTime == "" ? <Text style={styles.pickerPlaceholder}>시간</Text> : <Text style={styles.valueText}>{workSchedule.startTime}</Text>}
+                                {workSchedule.startTime == "" ? <CustomText style={styles.pickerPlaceholder}>시간</CustomText> : <CustomText style={styles.valueText}>{workSchedule.startTime}</CustomText>}
                             </TouchableOpacity>
                         </View>
                     </View>
                     <View style={{flexDirection:'row',justifyContent: 'space-between',marginBottom:10}}>
-                        <Text style={styles.leftText}>종료</Text>
+                        <CustomText style={styles.leftText}>종료</CustomText>
                         <View style={{flexDirection:'row'}}>
                             <TouchableOpacity onPress={() => {setEndDatePicker(true)}} style={{height:30}}>
-                                {workSchedule.endDate == "" ? <Text style={styles.pickerPlaceholder}>날짜</Text> : <Text style={styles.valueText}>{workSchedule.endDate}</Text>}
+                                {workSchedule.endDate == "" ? <CustomText style={styles.pickerPlaceholder}>날짜</CustomText> : <CustomText style={styles.valueText}>{workSchedule.endDate}</CustomText>}
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => {setEndTimePicker(true)}}  style={{height:30}}>
-                                {workSchedule.endTime == "" ? <Text style={styles.pickerPlaceholder}>시간</Text> : <Text style={styles.valueText}>{workSchedule.endTime}</Text>}
+                                {workSchedule.endTime == "" ? <CustomText style={styles.pickerPlaceholder}>시간</CustomText> : <CustomText style={styles.valueText}>{workSchedule.endTime}</CustomText>}
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -326,7 +327,7 @@ const WorkScheduleAddScreen = ({navigation}) => {
                                 color="black"
                                 size={25}
                             />
-                            <Text style={[styles.leftText,{marginLeft:10}]}>위치</Text>
+                            <CustomText style={[styles.leftText,{marginLeft:10}]}>위치</CustomText>
                         </View>
                     </View>
                     <View style={{flexDirection:'row',justifyContent: 'space-between',marginBottom:10}}>
@@ -336,13 +337,13 @@ const WorkScheduleAddScreen = ({navigation}) => {
                                 color="black"
                                 size={25}
                             />
-                            <Text style={[styles.leftText,{marginLeft:10}]}>알람</Text>
+                            <CustomText style={[styles.leftText,{marginLeft:10}]}>알람</CustomText>
                         </View>
                         <View>
-                            <Text style={[styles.leftText,{marginLeft:10}]}>사용함</Text>
+                            <CustomText style={[styles.leftText,{marginLeft:10}]}>사용함</CustomText>
                         </View>
                         <View>
-                            <Text style={[styles.leftText,{marginLeft:10}]}>매일</Text>
+                            <CustomText style={[styles.leftText,{marginLeft:10}]}>매일</CustomText>
                         </View>
                         <View>
                             <Feather
@@ -359,7 +360,7 @@ const WorkScheduleAddScreen = ({navigation}) => {
                                 color="black"
                                 size={25}
                             />
-                            <Text style={[styles.leftText,{marginLeft:10}]}>참여자</Text>
+                            <CustomText style={[styles.leftText,{marginLeft:10}]}>참여자</CustomText>
                         </View>
                     </View>
                 </View>

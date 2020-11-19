@@ -1,4 +1,4 @@
-import React,{useEffect} from 'react';
+import React,{useEffect,useState} from 'react';
 import {View, StyleSheet, TouchableOpacity,ScrollView} from 'react-native';
 import {
     useTheme,
@@ -18,10 +18,13 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {initializeCompany} from '../store/company/company';
 import Feather from 'react-native-vector-icons/Feather';
 import CookieManager from '@react-native-community/cookies';
+import Dialog from 'react-native-dialog';
+import {initialize, logout} from '../store/auth/auth';
+import CustomText from '../component/common/CustomText';
 
 // import{ AuthContext } from '../components/context';
 
@@ -30,14 +33,33 @@ export function DrawerContent(props) {
     const {colors} = useTheme();
     const dispatch = useDispatch();
 
+    const [isShowLogOut, setIsShowLogOut] = useState(false);
+
+    const {auth,logoutLoading,loading} = useSelector(({auth,loading}) =>({
+        auth:auth,
+        logoutLoading:loading['auth/LOGOUT'],
+        loading:loading
+    }))
+
     useEffect(() => {
 
     },[])
 
+    // useEffect(() => {
+    //     console.log("탐")
+    //     console.log(logoutLoading)
+    //     console.log(auth)
+    //     if(!logoutLoading && auth.logOut.result){
+    //         console.log("초기")
+    //         dispatch(initialize());
+    //     }
+    //
+    // },[auth,logoutLoading])
+
     const changeCompany = async () => {
         try {
             dispatch(initializeCompany());
-            await AsyncStorage.removeItem('COMPANY_ID');
+            // await AsyncStorage.removeItem('COMPANY_ID');
 
             props.setCompany();
         }
@@ -47,11 +69,46 @@ export function DrawerContent(props) {
     }
     // const { signOut, toggleTheme } = React.useContext(AuthContext);
 
+    const logOut = () => {
+        dispatch(logout());
+        dispatch(initialize());
+        dispatch(initializeCompany());
+        props.setCompany();
+
+    }
+
     return(
         <View style={{flex:1,paddingTop:0,height:'90%',backgroundColor:'#fff',borderTopRightRadius:10,borderBottomRightRadius:10}}>
             <View style={styles.userInfoSection}>
                 <View style={{flexDirection:'row',marginTop: 10,alignItems: 'center',justifyContent:'space-between'}}>
-                    <Text style={[styles.text_header_logo,{color: colors.ridaTheme}]}>RIDA</Text>
+                    <View style={{flex:1}}>
+                        <CustomText style={[styles.text_header_logo,{color: colors.ridaTheme}]}>RIDA</CustomText>
+                    </View>
+                    <View style={{flex:1,flexDirection:'row',justifyContent:'flex-end'}}>
+                        <Icon
+                            name="cog"
+                            color='gray'
+                            size={22}
+                            style={{marginRight:20}}
+                        />
+                        <TouchableOpacity onPress={() => {setIsShowLogOut(true)}}>
+                            <Icon
+                                name="logout"
+                                log-out
+                                color='gray'
+                                size={22}
+                                style={{marginRight:20}}
+                            />
+                        </TouchableOpacity>
+                        <Dialog.Container visible={isShowLogOut}>
+                            <Dialog.Title>로그아웃</Dialog.Title>
+                            <Dialog.Description>
+                                로그아웃 하시겠습니까?
+                            </Dialog.Description>
+                            <Dialog.Button label="취소" onPress={() => {setIsShowLogOut(false);}} />
+                            <Dialog.Button label="로그아웃" onPress={() => {logOut();}} />
+                        </Dialog.Container>
+                    </View>
                     {/*<Avatar.Image*/}
                     {/*    source={{*/}
                     {/*        uri: 'https://api.adorable.io/avatars/50/abott@adorable.png'*/}
@@ -59,12 +116,6 @@ export function DrawerContent(props) {
                     {/*    size={22}*/}
                     {/*    // style={{alignItems:'baseline'}}*/}
                     {/*/>*/}
-                    <Icon
-                        name="cog"
-                        color='gray'
-                        size={22}
-                        style={{marginRight:20}}
-                    />
                     {/*<View style={{marginLeft:15, flexDirection:'column'}}>*/}
                     {/*    <Title style={styles.title}>John Doe</Title>*/}
                     {/*    <Caption style={styles.caption}>@j_doe</Caption>*/}
@@ -87,37 +138,37 @@ export function DrawerContent(props) {
                     {/*<Drawer.Section style={styles.drawerSection}>*/}
                     <TouchableOpacity onPress={() => {props.navigation.navigate('Home')}}>
                         <View>
-                            <Text style={[styles.drawerSectionItem,{padding:10}]}>출퇴근 체크</Text>
+                            <CustomText style={[styles.drawerSectionItem,{padding:10}]}>출퇴근 체크</CustomText>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {props.navigation.navigate('Home')}}>
                         <View>
-                            <Text style={[styles.drawerSectionItem,{padding:10}]}>급여관리</Text>
+                            <CustomText style={[styles.drawerSectionItem,{padding:10}]}>급여관리</CustomText>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {props.navigation.navigate('Home')}}>
                         <View>
-                            <Text style={[styles.drawerSectionItem,{padding:10}]}>휴가관리</Text>
+                            <CustomText style={[styles.drawerSectionItem,{padding:10}]}>휴가관리</CustomText>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {props.navigation.navigate('Home')}}>
                         <View>
-                            <Text style={[styles.drawerSectionItem,{padding:10}]}>리포트</Text>
+                            <CustomText style={[styles.drawerSectionItem,{padding:10}]}>리포트</CustomText>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {props.navigation.navigate('contact')}}>
+                        <View>
+                            <CustomText style={[styles.drawerSectionItem,{padding:10}]}>연락처</CustomText>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {props.navigation.navigate('Home')}}>
                         <View>
-                            <Text style={[styles.drawerSectionItem,{padding:10}]}>연락처</Text>
+                            <CustomText style={[styles.drawerSectionItem,{padding:10}]}>공지사항</CustomText>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {props.navigation.navigate('Home')}}>
                         <View>
-                            <Text style={[styles.drawerSectionItem,{padding:10}]}>공지사항</Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {props.navigation.navigate('Home')}}>
-                        <View>
-                            <Text style={[styles.drawerSectionItem,{padding:10}]}>도움말 및 지원</Text>
+                            <CustomText style={[styles.drawerSectionItem,{padding:10}]}>도움말 및 지원</CustomText>
                         </View>
                     </TouchableOpacity>
 

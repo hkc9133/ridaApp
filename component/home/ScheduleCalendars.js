@@ -145,7 +145,7 @@ const ScheduleCalendars = ({scrollRef}) => {
     const handleMarkeDate = (data) => {
         let tempMarkeDates = {};
         data.forEach(function (item) {
-            tempMarkeDates[moment(item.date).format('YYYY-MM-DD')] = {dots: [item.event == 'WORK_IN' || item.event == 'WORK_OUT' && commute]};
+            tempMarkeDates[moment(item.date).format('YYYY-MM-DD')] = {dots: [commute]};
         });
         setMarkedDates(tempMarkeDates);
     };

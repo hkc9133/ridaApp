@@ -5,6 +5,7 @@ import Modal from 'react-native-modal';
 import Feather from 'react-native-vector-icons/Feather';
 import ScheduleDetailItem from './ScheduleDetailItem';
 import moment from 'moment';
+import CustomText from '../common/CustomText';
 
 const ScheduleDetailModal = ({isShowDetail,setIsShowDetail,schedule,initSchedule,selectDay}) => {
 
@@ -88,7 +89,7 @@ const ScheduleDetailModal = ({isShowDetail,setIsShowDetail,schedule,initSchedule
             }}>
                 <View style={{flexDirection: 'row',justifyContent:'space-between',width:'100%'}}>
                     <View style={{marginBottom:3}}>
-                        <Text style={{fontSize:18,fontWeight:"500"}}>{selectDay.day}일</Text>
+                        <CustomText style={{fontSize:18,fontWeight:"500"}}>{selectDay.day}일</CustomText>
                     </View>
                     <View>
                         <TouchableOpacity  onPress={() => {setIsShowDetail(false);initSchedule();}}>
@@ -101,7 +102,7 @@ const ScheduleDetailModal = ({isShowDetail,setIsShowDetail,schedule,initSchedule
                     </View>
                 </View>
                 <View>
-                    <Text style={{fontSize:16,fontWeight:"500"}}>{selectDay.year} {selectDay.month}월 {selectDay.day}일({dayName})</Text>
+                    <CustomText style={{fontSize:16,fontWeight:"500"}}>{selectDay.year} {selectDay.month}월 {selectDay.day}일({dayName})</CustomText>
                 </View>
                 <ScrollView style={{borderTopWidth:1, borderColor:'lightgray',width:'100%',marginTop:20,marginBottom:15,paddingTop:20,maxHeight:300}}>
                     {schedule.result && schedule.data.length > 0 &&(
@@ -111,7 +112,7 @@ const ScheduleDetailModal = ({isShowDetail,setIsShowDetail,schedule,initSchedule
                     )}
                     {schedule.result && schedule.data.length == 0 &&(
                         <View style={{alignItems:'center'}}>
-                            <Text>일정이 없습니다</Text>
+                            <CustomText>일정이 없습니다</CustomText>
                         </View>
                     )}
                 </ScrollView>

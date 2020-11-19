@@ -6,19 +6,25 @@ import * as memberAPI from '../../lib/api/member/member';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const [SELECT_COMPANY,SELECT_COMPANY_SUCCESS, SELECT_COMPANY_FAILURE] = createRequestActionTypes('member/SELECT_COMPANY')
+const [GET_CONTACT,GET_CONTACT_SUCCESS, GET_CONTACT_FAILURE] = createRequestActionTypes('member/GET_CONTACT')
 const INITIALIZE = 'member/INITIALIZE';
 
 
 // export const selectCompany = createAction(SELECT_COMPANY,(id)=>(id));
 export const initialize = createAction(INITIALIZE);
+export const getContact = createAction(GET_CONTACT);
 
-// const selectCompanySaga = createRequestSaga(SELECT_COMPANY, memberAPI.selectCompany);
+const getContactSaga = createRequestSaga(GET_CONTACT, memberAPI.getContact);
 
 export function* memberSaga(){
-    // yield takeLatest(SELECT_COMPANY, selectCompanySaga);
+    yield takeLatest(GET_CONTACT, getContactSaga);
 }
 
 const initialState = {
+    contact:{
+        result:null,
+        data:null,
+    }
     // selectCompany:{
     //     companyId:null,
     //     result:null,
@@ -28,24 +34,20 @@ const initialState = {
 
 const member = handleActions(
     {
-        // [SELECT_COMPANY_SUCCESS]: (state, {payload: response}) =>
-        //     produce(state,draft => {
-        //         draft.selectCompany.companyId = response.data.companyId;
-        //         draft.selectCompany.result = true;
-        //         draft.selectCompany.error = false;
-        //         AsyncStorage.setItem('userToken', response.data.token);
-        //         AsyncStorage.setItem('companyId', response.data.companyId);
-        //     }),
-        //
-        // [SELECT_COMPANY_FAILURE]: (state, {payload: error}) =>
-        //     produce(state, draft => {
-        //         draft.selectCompany.result = false;
-        //         draft.selectCompany.error = error.response.data;
-        //         AsyncStorage.clear();
-        //     }),
-        // [INITIALIZE]: (state, {payload: form}) => ({
-        //     ...initialState
-        // }),
+        [GET_CONTACT_SUCCESS]: (state, {payload: response}) =>
+            produce(state,draft => {
+                draft.contact.result = true;
+                draft.contact.data = response.data;
+            }),
+
+        [GET_CONTACT_FAILURE]: (state, {payload: error}) =>
+            produce(state, draft => {
+                draft.contact.result = false;
+                draft.contact.data = null;
+            }),
+        [INITIALIZE]: (state, {payload: form}) => ({
+            ...initialState
+        }),
     },
     initialState
 );

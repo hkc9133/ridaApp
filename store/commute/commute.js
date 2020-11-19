@@ -62,21 +62,25 @@ const commute = handleActions(
             produce(state,draft => {
                 draft.workIn.result = true
                 draft.workOut.result = null
+                // draft.commuteStatus.isWorkIn = true
             }),
 
         [WORK_IN_FAILURE]: (state, {payload: error}) =>
             produce(state, draft => {
                 draft.workIn.result = false
+                // draft.commuteStatus.isWorkIn = null
             }),
         [WORK_OUT_SUCCESS]: (state, {payload: response}) =>
             produce(state,draft => {
                 draft.workOut.result = true
                 draft.workIn.result = null
+                // draft.commuteStatus.isWorkIn = false
             }),
 
         [WORK_OUT_FAILURE]: (state, {payload: error}) =>
             produce(state, draft => {
                 draft.workOut.result = false
+                // draft.commuteStatus.isWorkIn = null
 
             }),
         [INITIALIZE]: (state, {payload: form}) => ({

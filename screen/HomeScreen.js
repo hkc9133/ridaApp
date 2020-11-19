@@ -39,6 +39,7 @@ import {getCommuteStatus, workOut, workIn, initializeForm} from '../store/commut
 import Dialog from 'react-native-dialog';
 import WorkScheduleAddScreen from './WorkScheduleAddScreen';
 import { useHeaderHeight } from "@react-navigation/stack";
+import CustomText from '../component/common/CustomText';
 
 
 async function requestPermission() {
@@ -128,6 +129,9 @@ const HomeScreen = ({navigation}) => {
     useEffect(() => {
         reloadLocation();
         dispatch(getCommuteStatus());
+        return () => {
+
+        }
 
     }, []);
 
@@ -163,13 +167,20 @@ const HomeScreen = ({navigation}) => {
         navigation.setOptions({
             headerStyle: {
                 opacity: 1,
-                backgroundColor: "green",
+            },
+            headerTitleStyle: {
+                opacity: headerOpacity,
+                fontSize:30,
+                fontWeight:'700',
+                color:'black',
+                textAlign: 'center',
+                alignSelf:'center',
             },
             headerLeft: () => (
                     <>
-                        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                        <Animated.Image source={require('../asset/image/menu_black.png')} style={{opacity:headerOpacity,position:'absolute',marginLeft:10}}/>
-                            <Animated.Image source={require('../asset/image/menu.png')} style={{opacity:hideButton,position:'absolute',marginLeft:10}}/>
+                        <TouchableOpacity onPress={() => {navigation.openDrawer(); console.log("Aa")}} style={{}}>
+                            <Animated.Image source={require('../asset/image/menu_black.png')} style={{opacity:headerOpacity,marginLeft:10,marginTop:8}}/>
+                            <Animated.Image source={require('../asset/image/menu.png')} style={{opacity:hideButton,marginLeft:10,marginTop:-17}}/>
                         </TouchableOpacity>
                     </>
                 // <Icon.Button name="ios-menu" color={menuButtonColor} size={25} backgroundColor='transparent' underlayColor='transparent' onPress={() => navigation.openDrawer()}></Icon.Button>
@@ -182,11 +193,11 @@ const HomeScreen = ({navigation}) => {
                         ...StyleSheet.absoluteFillObject,
                         opacity: headerOpacity,
                     }}
-                />
+                ></Animated.View>
             ),
             headerTransparent: true,
         });
-    }, [headerOpacity, navigation]);
+    }, [headerOpacity,hideButton, navigation]);
 
     //
     // useLayoutEffect(() => {
@@ -299,11 +310,10 @@ const HomeScreen = ({navigation}) => {
 
     return (
         <Animatable.View animation="fadeInUp" style={{flex: 1, flexDirection: 'row'}}>
-            {/*<StatusBar translucent backgroundColor='transparent' />*/}
+            <StatusBar translucent backgroundColor='transparent' barStyle={'dark-content'}/>
             <Animated.ScrollView ref={scrollRef}
                                  onContentSizeChange={() => {
                                      // 여기다가 어떤 경우에 스크롤을 하면 될지에 대한 조건문을 추가하면 된다.
-                                     console.log(scrollRef.current)
                                      // scrollRef.current.scrollTo({ y: 0, animated: true, });
                                  }}
                                  contentInsetAdjustmentBehavior="never"
@@ -398,9 +408,9 @@ const HomeScreen = ({navigation}) => {
                                 borderRadius: 14,
                                 backgroundColor: 'rgba(0,0,0,0.6)',
                             }}>
-                            <Text style={{fontSize: 10, color: '#ffffff'}}>
+                            <CustomText style={{fontSize: 10, color: '#ffffff'}}>
                                 {slideIdx}/{topSlideImage.length}
-                            </Text>
+                            </CustomText>
                         </View>
                     </View>
                 )}
@@ -477,9 +487,9 @@ const HomeScreen = ({navigation}) => {
 
                                         elevation: 5,
                                     }}>
-                                        <Text style={{color: '#fff', fontWeight: '700', fontSize: 15}}>
+                                        <CustomText style={{color: '#fff', fontWeight: '700', fontSize: 15}}>
                                             {commute.commuteStatus.result && commute.commuteStatus.isWorkIn ? `${moment(commute.commuteStatus.commuteInfo.clockInDate).format('YYYY.MM.DD (HH:mm:ss)')}   퇴근하기` : '출근하기'}
-                                        </Text>
+                                        </CustomText>
                                     </View>
                                 </TouchableOpacity>
                             )}

@@ -7,6 +7,7 @@ import LoginScreen from './LoginScreen';
 import SignUpScreen from './SignUpScreen';
 import {Text, TouchableOpacity, View} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import CustomText from '../component/common/CustomText';
 
 const RootStack = createStackNavigator();
 
@@ -33,7 +34,7 @@ const RootStackScreen = ({navigation}) => (
          }}
     >
         <RootStack.Screen name="SignInScreen" component={LoginScreen} options={{
-            title: <Text>로그인</Text>,
+            title: <CustomText>로그인</CustomText>,
                 // headerTitleStyle: {
                 //     headerTitleAlign: "center",
                 //     textAlign:"center",
@@ -41,11 +42,10 @@ const RootStackScreen = ({navigation}) => (
                 // },
         }}/>
         <RootStack.Screen name="SignUpScreen" component={SignUpScreen} options={{
-            title: <Text>회원가입</Text>,
+            title: <CustomText>회원가입</CustomText>,
             // headerLeft:<View style={{padding:6}}></View>,
             headerTitleStyle: {
                 textAlign: 'center',
-                // flexGrow:1,
                 alignSelf:'center',
             },
             // headerLeft: () => (
@@ -58,7 +58,7 @@ const RootStackScreen = ({navigation}) => (
             //     </TouchableOpacity>
             // ),
             headerRight:() => (
-                <Text></Text>
+                <CustomText></CustomText>
             )
         }}/>
     </RootStack.Navigator>

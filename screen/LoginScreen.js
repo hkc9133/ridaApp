@@ -1,13 +1,14 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {
     View,
-    Text,
+    // Text,
     TouchableOpacity,
     TextInput,
     Platform,
     StyleSheet,
     StatusBar,
     Alert,
+    ScrollView
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
@@ -19,12 +20,13 @@ import {CheckBox} from 'react-native-elements';
 FontAwesome.loadFont();
 Feather.loadFont();
 
-import {useTheme} from 'react-native-paper';
+import {useTheme,Title,Text} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {authCheck, login, initialize} from '../store/auth/auth';
 import AsyncStorage from '@react-native-community/async-storage';
 import {getSchedule} from '../store/schedule/schedule';
 import {initializeCompany} from '../store/company/company';
+import CustomText from '../component/common/CustomText';
 
 const LoginScreen = ({navigation}) => {
     const dispatch = useDispatch();
@@ -44,7 +46,7 @@ const LoginScreen = ({navigation}) => {
     });
     const [isIdSave, setIsIdSave] = useState(false);
 
-    const {colors} = useTheme();
+    const {colors,fonts} = useTheme();
     useEffect(() => {
         // AsyncStorage.getItem("userId").then((userId) => {
         //     setData({
@@ -115,7 +117,7 @@ const LoginScreen = ({navigation}) => {
         if (data.isValidUser && data.isValidPassword) {
             // AsyncStorage.removeItem('COMPANY_ID');
             saveId();
-            // dispatch(initializeCompany());
+            dispatch(initializeCompany());
             dispatch(login(loginData));
         }
     };
@@ -145,182 +147,158 @@ const LoginScreen = ({navigation}) => {
 
 
     return (
-        <View style={styles.container}>
-            <StatusBar backgroundColor='#009387' barStyle="dark-content"/>
+        <ScrollView style={styles.container} contentContainerStyle={{ flexGrow: 1 }}>
+            <StatusBar backgroundColor='#ffffff' barStyle="dark-content"/>
             {/*<View style={styles.header}>*/}
             {/*    <Text style={styles.text_header}>Welcome!</Text>*/}
             {/*</View>*/}
             <Animatable.View
                 animation="fadeInUpBig"
-                style={[styles.footer, {
-                    backgroundColor: '#fff',
-                }]}
+                // style={[styles.footer, {
+                //     backgroundColor: '#fff',
+                // }]}
+                style={{flex:1}}
             >
-                <View style={styles.header_logo}>
-                    <Text style={[styles.text_header_logo, {color: colors.ridaTheme}]}>RIDA</Text>
+                <View style={{flex:2,flexDirection:'column',justifyContent:'center'}}>
+                    <View style={styles.header_logo}>
+                        <CustomText style={[styles.text_header_logo, {color: colors.ridaTheme,fontFamily:fonts.noto}]}>RIDA</CustomText>
+                    </View>
+                    <View style={styles.header}>
+                        <CustomText style={[styles.text_header,{fontFamily:fonts.noto}]}>로그인</CustomText>
+                    </View>
                 </View>
-                <View style={styles.header}>
-                    <Text style={styles.text_header}>로그인</Text>
-                </View>
-                {/*<Text style={[styles.text_footer, {*/}
-                {/*    color: colors.text*/}
-                {/*}]}>Username</Text>*/}
-                <View style={[styles.action, {marginTop: 70}]}>
-                    <Feather
-                        name="user"
-                        color={colors.text}
-                        size={20}
-                        style={styles.icon}
-                    />
-                    <TextInput
-                        placeholder="아이디"
-                        placeholderTextColor="#666666"
-                        style={[styles.textInput, {
-                            color: colors.text,
-                        }]}
-                        autoCapitalize="none"
-                        onChangeText={(value) => onChangeIdValue(value)}
-                    />
-                    {data.check_textInputChange ?
-                        <Animatable.View
-                            animation="bounceIn"
-                        >
-                            <Feather
-                                name="check-circle"
-                                color={colors.ridaTheme}
-                                size={20}
-                                style={styles.icon}
-                            />
+                <View style={{flex:1}}>
+                    <View style={[styles.action]}>
+                        <Feather
+                            name="user"
+                            color={colors.text}
+                            size={20}
+                            style={styles.icon}
+                        />
+                        <TextInput
+                            placeholder="아이디"
+                            placeholderTextColor="#666666"
+                            style={[styles.textInput, {
+                                color: colors.text,
+                            }]}
+                            autoCapitalize="none"
+                            onChangeText={(value) => onChangeIdValue(value)}
+                        />
+                        {data.check_textInputChange ?
+                            <Animatable.View
+                                animation="bounceIn"
+                            >
+                                <Feather
+                                    name="check-circle"
+                                    color={colors.ridaTheme}
+                                    size={20}
+                                    style={styles.icon}
+                                />
+                            </Animatable.View>
+                            : null}
+                    </View>
+                    {data.isValidUser ? null :
+                        <Animatable.View animation="fadeInLeft" duration={500}>
+                            <CustomText style={styles.errorMsg}>아이디는 5자 이상합니다</CustomText>
                         </Animatable.View>
-                        : null}
+                    }
+                    <View style={styles.action}>
+                        <Feather
+                            name="lock"
+                            color={colors.text}
+                            size={20}
+                            style={styles.icon}
+                        />
+                        <TextInput
+                            placeholder="비밀번호"
+                            placeholderTextColor="#666666"
+                            secureTextEntry={data.secureTextEntry ? true : false}
+                            style={[styles.textInput, {
+                                color: colors.text,
+                            }]}
+                            autoCapitalize="none"
+                            onChangeText={(value) => onChangePasswordValue(value)}
+                        />
+                        <TouchableOpacity
+                            onPress={updateSecureTextEntry}
+                        >
+                            {data.secureTextEntry ?
+                                <Feather
+                                    name="eye-off"
+                                    color="grey"
+                                    size={20}
+                                    style={styles.icon}
+                                />
+                                :
+                                <Feather
+                                    name="eye"
+                                    color="grey"
+                                    size={20}
+                                    style={styles.icon}
+                                />
+                            }
+                        </TouchableOpacity>
+                    </View>
+                    {data.isValidPassword ? null :
+                        <Animatable.View animation="fadeInLeft" duration={500}>
+                            <CustomText style={styles.errorMsg}>비밀번호는 8 ~ 20자 입니다.</CustomText>
+                        </Animatable.View>
+                    }
+                    <View style={styles.checkboxContainer}>
+                        <CheckBox
+                            title='아이디 저장'
+                            checked={isIdSave}
+                            checkedColor={colors.ridaTheme}
+                            onIconPress={() => setIsIdSave(!isIdSave)}
+                            containerStyle={{backgroundColor: '#fff', borderWidth: 0, marginLeft: 0}}
+                        />
+                    </View>
+                    {data.isValidLogin ? null :
+                        <Animatable.View animation="fadeInUp" duration={500}>
+                            <CustomText style={[styles.errorMsg, {textAlign: 'center'}]}>아이디 or 패스워드가 잘못되었습니다</CustomText>
+                        </Animatable.View>
+                    }
                 </View>
-                {data.isValidUser ? null :
-                    <Animatable.View animation="fadeInLeft" duration={500}>
-                        <Text style={styles.errorMsg}>아이디는 5자 이상합니다</Text>
-                    </Animatable.View>
-                }
-
-
-                {/*<Text style={[styles.text_footer, {*/}
-                {/*    color: colors.text,*/}
-                {/*    marginTop: 35*/}
-                {/*}]}>Password</Text>*/}
-                <View style={styles.action}>
-                    <Feather
-                        name="lock"
-                        color={colors.text}
-                        size={20}
-                        style={styles.icon}
-                    />
-                    <TextInput
-                        placeholder="비밀번호"
-                        placeholderTextColor="#666666"
-                        secureTextEntry={data.secureTextEntry ? true : false}
-                        style={[styles.textInput, {
-                            color: colors.text,
-                        }]}
-                        autoCapitalize="none"
-                        onChangeText={(value) => onChangePasswordValue(value)}
-                    />
-                    <TouchableOpacity
-                        onPress={updateSecureTextEntry}
-                    >
-                        {data.secureTextEntry ?
-                            <Feather
-                                name="eye-off"
-                                color="grey"
-                                size={20}
-                                style={styles.icon}
-                            />
-                            :
-                            <Feather
-                                name="eye"
-                                color="grey"
-                                size={20}
-                                style={styles.icon}
-                            />
-                        }
-                    </TouchableOpacity>
-                </View>
-                {data.isValidPassword ? null :
-                    <Animatable.View animation="fadeInLeft" duration={500}>
-                        <Text style={styles.errorMsg}>비밀번호는 8 ~ 20자 입니다.</Text>
-                    </Animatable.View>
-                }
-                <View style={styles.checkboxContainer}>
-                    <CheckBox
-                        title='아이디 저장'
-                        checked={isIdSave}
-                        checkedColor={colors.ridaTheme}
-                        onIconPress={() => setIsIdSave(!isIdSave)}
-                        containerStyle={{backgroundColor: '#fff', borderWidth: 0, marginLeft: 0}}
-                    />
-                </View>
-                {data.isValidLogin ? null :
-                    <Animatable.View animation="fadeInUp" duration={500}>
-                        <Text style={[styles.errorMsg, {textAlign: 'center'}]}>아이디 or 패스워드가 잘못되었습니다</Text>
-                    </Animatable.View>
-                }
-
-
-                {/*<TouchableOpacity>*/}
-                {/*    <Text style={{color: '#009387', marginTop:15}}>Forgot password?</Text>*/}
-                {/*</TouchableOpacity>*/}
-                <View style={styles.button}>
-                    <TouchableOpacity
-                        style={styles.signIn}
-                        onPress={() => {
-                            loginHandle(data);
-                        }}
-                    >
-                        {/*<LinearGradient*/}
-                        {/*    colors={['#08d4c4', '#01ab9d']}*/}
-                        {/*    style={styles.signIn}*/}
-                        {/*>*/}
-                        <Text style={[styles.textSign, {
-                            color: 'black',
-                        }]}>로그인</Text>
-                        {/*</LinearGradient>*/}
-                    </TouchableOpacity>
-
-                    {/*<TouchableOpacity*/}
-                    {/*    onPress={() => navigation.navigate('SignUpScreen')}*/}
-                    {/*    style={[styles.signIn, {*/}
-                    {/*        borderColor: '#009387',*/}
-                    {/*        borderWidth: 1,*/}
-                    {/*        marginTop: 15*/}
-                    {/*    }]}*/}
-                    {/*>*/}
-                    {/*    <Text style={[styles.textSign, {*/}
-                    {/*        color: '#009387'*/}
-                    {/*    }]}>Sign Up</Text>*/}
-                    {/*</TouchableOpacity>*/}
-                </View>
-                <View style={{justifyContent: 'space-between', flexDirection: 'row', flex: 1}}>
-                    <TouchableOpacity
-                        style={[styles.bottomButton]}
-                        onPress={() => navigation.navigate('SignUpScreen')}
-                    >
-                        <Text style={[styles.bottomBottomText]}>회원가입</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.bottomButton}
-                    >
-                        <Text style={[styles.bottomBottomText]}>아이디 찾기</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.bottomButton}
-                    >
-                        <Text style={[styles.bottomBottomText]}>비밀번호 재설정</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={{height: 60, justifyContent: 'flex-end'}}>
-                    <Text style={{textAlign: 'center', color: '#919191'}}>
-                        Ⓒ 2020.Rida all rights reserved.
-                    </Text>
+                <View style={{flex:2}}>
+                    <View style={styles.button}>
+                        <TouchableOpacity
+                            style={styles.signIn}
+                            onPress={() => {
+                                loginHandle(data);
+                            }}
+                        >
+                            <CustomText style={[styles.textSign, {
+                                color: 'black',fontFamily:fonts.noto
+                            }]}>로그인</CustomText>
+                            {/*</LinearGradient>*/}
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{justifyContent: 'space-between', flexDirection: 'row', flex: 1,}}>
+                        <TouchableOpacity
+                            style={[styles.bottomButton]}
+                            onPress={() => navigation.navigate('SignUpScreen')}
+                        >
+                            <CustomText style={[styles.bottomBottomText]}>회원가입</CustomText>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.bottomButton}
+                        >
+                            <CustomText style={[styles.bottomBottomText]}>아이디 찾기</CustomText>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.bottomButton}
+                        >
+                            <CustomText style={[styles.bottomBottomText]}>비밀번호 재설정</CustomText>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{height: 60, justifyContent: 'flex-end'}}>
+                        <CustomText style={{textAlign: 'center', color: '#919191'}}>
+                            Ⓒ 2020.Rida all rights reserved.
+                        </CustomText>
+                    </View>
                 </View>
             </Animatable.View>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -328,20 +306,31 @@ export default LoginScreen;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        // flex: 1,
         backgroundColor: '#fff',
-        paddingHorizontal: 20,
-        paddingVertical: 20,
+        paddingHorizontal: 35,
+        paddingTop:50,
+        paddingBottom:20
+        // minHeight:2000
     },
     header_logo: {
-        height: 40,
-        justifyContent: 'center',
-        marginTop: 100,
+        // justifyContent: 'flex-start',
+        // marginTop: 100,
+    },
+    text_header_logo: {
+        fontWeight: 'bold',
+        fontSize: 45,
     },
     header: {
-        height: 40,
-        justifyContent: 'center',
-        marginTop: 5,
+        // height: 50,
+        // justifyContent: 'flex-start',
+        // justifyContent: 'flex-end',
+    },
+    text_header: {
+        color: 'black',
+        fontWeight: 'bold',
+        fontSize: 37,
+        // textAlignVertical: "top"
     },
     footer: {
         flex: 1,
@@ -351,22 +340,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 30,
     },
-    text_header_logo: {
-        fontWeight: 'bold',
-        fontSize: 40,
-    },
-    text_header: {
-        color: 'black',
-        fontWeight: '500',
-        fontSize: 35,
-    },
     text_footer: {
         color: '#05375a',
         fontSize: 18,
     },
     action: {
         flexDirection: 'row',
-        marginTop: 18,
+        marginTop: 30,
         borderBottomWidth: 1,
         borderBottomColor: '#f2f2f2',
         paddingBottom: 3,
@@ -392,14 +372,14 @@ const styles = StyleSheet.create({
     },
     button: {
         alignItems: 'center',
-        marginTop: 30,
+        marginBottom: 14,
     },
     signIn: {
         width: '100%',
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth:0.5,
+        borderWidth:1,
         borderColor: '#919191',
         ...Platform.select({
             ios: {shadowColor: "#000",
@@ -409,7 +389,7 @@ const styles = StyleSheet.create({
                 },
                 shadowOpacity: 0.25,
                 shadowRadius: 3.84},
-            android: {elevation: 1},
+            // android: {elevation: 1},
         }),
 
     },
@@ -430,7 +410,7 @@ const styles = StyleSheet.create({
         margin: 8,
     },
     bottomButton: {
-        marginTop: 25,
+        // marginTop: 25,
         height: 25,
         // flex: 1
     },
