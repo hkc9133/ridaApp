@@ -10,6 +10,7 @@ const [GET_COMPANY_LIST,GET_COMPANY_LIST_SUCCESS, GET_COMPANY_LIST_FAILURE] = cr
 const [CREATE_COMPANY,CREATE_COMPANY_SUCCESS, CREATE_COMPANY_FAILURE] = createRequestActionTypes('company/CREATE_COMPANY')
 const [JOIN_COMPANY,JOIN_COMPANY_SUCCESS, JOIN_COMPANY_FAILURE] = createRequestActionTypes('company/JOIN_COMPANY')
 const [SELECT_COMPANY,SELECT_COMPANY_SUCCESS, SELECT_COMPANY_FAILURE] = createRequestActionTypes('company/SELECT_COMPANY')
+const [UPLOAD_PROFILE_IMAGE,UPLOAD_PROFILE_IMAGE_SUCCESS, UPLOAD_PROFILE_IMAGE_FAILURE] = createRequestActionTypes('company/UPLOAD_PROFILE_IMAGE')
 const INITIALIZE = 'company/INITIALIZE';
 const INITIALIZE_COMPANY = 'company/INITIALIZE_COMPANY';
 const SETTING_COMPANY = 'company/SETTING_COMPANY';
@@ -22,20 +23,33 @@ export const selectCompany = createAction(SELECT_COMPANY,(id)=>(id));
 export const initialize = createAction(INITIALIZE);
 export const initializeCompany = createAction(INITIALIZE_COMPANY);
 export const settingCompany = createAction(SETTING_COMPANY, (companyId)=>(companyId));
+export const uploadProfileImage = createAction(UPLOAD_PROFILE_IMAGE, (fileInfo)=>(fileInfo));
 
 const joinCompanyListSaga = createRequestSaga(JOIN_COMPANY, companyAPI.joinCompany);
 const getCompanyListSaga = createRequestSaga(GET_COMPANY_LIST, companyAPI.getCompanyList);
 const createCompanySaga = createRequestSaga(CREATE_COMPANY, companyAPI.createCompany);
 const selectCompanySaga = createRequestSaga(SELECT_COMPANY, companyAPI.selectCompany);
+const uploadProfileImageSaga = createRequestSaga(UPLOAD_PROFILE_IMAGE, companyAPI.uploadProfileImage);
 
 export function* companySaga(){
     yield takeLatest(JOIN_COMPANY, joinCompanyListSaga);
     yield takeLatest(CREATE_COMPANY, createCompanySaga);
     yield takeLatest(GET_COMPANY_LIST, getCompanyListSaga);
     yield takeLatest(SELECT_COMPANY, selectCompanySaga);
+    yield takeLatest(UPLOAD_PROFILE_IMAGE, uploadProfileImageSaga);
+
 }
 
 const initialState = {
+    myInfo:{
+        memberName:null,
+        memberRole:null,
+        memberPhone:null,
+        profileImage:{
+            result:null,
+            image:null,
+        }
+    },
     company:{
         list:null,
         error:null
@@ -88,6 +102,10 @@ const company = handleActions(
         [SELECT_COMPANY_SUCCESS]: (state, {payload: response}) =>
             produce(state,draft => {
                 draft.selectCompany.companyId = response.data.companyId;
+                draft.myInfo.memberName = response.data.memberInfo.memberName;
+                draft.myInfo.memberRole = response.data.memberInfo.memberRole;
+                draft.myInfo.memberPhone = response.data.memberInfo.memberPhone;
+                draft.myInfo.profileImage.image = response.data.memberInfo.profileImage;
                 draft.selectCompany.result = true;
                 draft.selectCompany.error = false;
                 AsyncStorage.setItem('COMPANY_ID', response.data.companyId);
@@ -95,9 +113,21 @@ const company = handleActions(
 
         [SELECT_COMPANY_FAILURE]: (state, {payload: error}) =>
             produce(state, draft => {
+                draft.myInfo = initialState.myInfo;
                 draft.selectCompany.result = false;
                 draft.selectCompany.error = error.response.data;
                 AsyncStorage.removeItem('COMPANY_ID');
+            }),
+        [UPLOAD_PROFILE_IMAGE_SUCCESS]: (state, {payload: response}) =>
+            produce(state,draft => {
+                draft.myInfo.profileImage.result = true;
+                draft.myInfo.profileImage.image = response.data;
+            }),
+
+        [UPLOAD_PROFILE_IMAGE_FAILURE]: (state, {payload: error}) =>
+            produce(state, draft => {
+                draft.myInfo.profileImage.result = false;
+                draft.myInfo.profileImage.image = myInfo.profileImage.image != null ? myInfo.profileImage.image : null;
             }),
         [SETTING_COMPANY]: (state, {payload: id}) =>
             produce(state, draft => {

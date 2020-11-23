@@ -15,6 +15,8 @@ import ProfileScreen from './ProfileScreen';
 import WorkScheduleAddScreen from './WorkScheduleAddScreen';
 import CustomText from '../component/common/CustomText';
 import ContactScreen from './ContactScreen';
+import PrivacyScreen from './PrivacyScreen';
+import {useTheme} from 'react-native-paper';
 
 const HomeStack = createStackNavigator();
 const DetailsStack = createStackNavigator();
@@ -77,6 +79,7 @@ const forSlide = ({ current, next, inverted, layouts: { screen } }) => {
     };
 };
 
+
 const MainTabScreen = () => (
     <Tab.Navigator
       initialRouteName="Home"
@@ -135,19 +138,22 @@ const MainTabScreen = () => (
 export default MainTabScreen;
 
 const HomeStackScreen = ({navigation}) => (
-<HomeStack.Navigator screenOptions={{
-        headerStyle: {
-            backgroundColor: '#ffffff',
-        },
-        // headerTransparent: true,
-        headerTintColor: '#000000',
-        headerTitleStyle: {
-        fontWeight: 'bold',
-        },
-    }}
-                     mode={'modal'}
->
-        <HomeStack.Screen name="Home" component={HomeScreen}headerMode="screen" options={{
+
+
+
+    <HomeStack.Navigator screenOptions={{
+            headerStyle: {
+                backgroundColor: '#ffffff',
+            },
+            // headerTransparent: true,
+            headerTintColor: '#000000',
+            headerTitleStyle: {
+            fontWeight: 'bold',
+            },
+        }}
+                         mode={'modal'}
+    >
+        <HomeStack.Screen name="Home" component={HomeScreen} headerMode="screen" options={{
             title:'RIDA',
             headerTitleStyle: {
                 color:'black',
@@ -155,7 +161,6 @@ const HomeStackScreen = ({navigation}) => (
                 alignSelf:'center',
             },
             headerStyle: {
-                /*  */
             },
             headerTintColor: {
                 /*  */
@@ -174,17 +179,29 @@ const HomeStackScreen = ({navigation}) => (
             title:'연락처',
             cardStyleInterpolator: forSlide
         }} />
+        <HomeStack.Screen name="privacy" component={PrivacyScreen} options={{
+            title:'개인정보',
+            headerStyle: {
+                backgroundColor: '#0ec269',
+                shadowOpacity:0
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold'
+            },
+            cardStyleInterpolator: forSlide
+        }} />
 </HomeStack.Navigator>
 );
 
 const DetailsStackScreen = ({navigation}) => (
 <DetailsStack.Navigator screenOptions={{
         headerStyle: {
-        backgroundColor: '#1f65ff',
+            backgroundColor: '#1f65ff',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
-        fontWeight: 'bold'
+            fontWeight: 'bold'
         }
     }}>
         <DetailsStack.Screen name="Details" component={DetailsScreen} options={{

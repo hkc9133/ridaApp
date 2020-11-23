@@ -48,12 +48,27 @@ const LoginScreen = ({navigation}) => {
 
     const {colors,fonts} = useTheme();
     useEffect(() => {
-        // AsyncStorage.getItem("userId").then((userId) => {
-        //     setData({
-        //         ...data,
-        //         userId:userId
-        //     });
-        // })
+        AsyncStorage.getItem("userId").then((userId) => {
+            if(userId != null){
+                setData({
+                    ...data,
+                    userId:userId
+                });
+                setIsIdSave(true);
+            }
+        })
+
+        return () => {
+            setData({
+                userId: '',
+                userPassword: '',
+                check_textInputChange: false,
+                secureTextEntry: true,
+                isValidUser: true,
+                isValidPassword: true,
+                isValidLogin: true,
+            })
+        }
     }, []);
 
     React.useLayoutEffect(() => {
@@ -135,6 +150,7 @@ const LoginScreen = ({navigation}) => {
 
 
     async function saveId() {
+        console.log("세이브")
         try {
             if (isIdSave) {
                 await AsyncStorage.setItem('userId', data.userId);
@@ -182,6 +198,7 @@ const LoginScreen = ({navigation}) => {
                                 color: colors.text,
                             }]}
                             autoCapitalize="none"
+                            value={data.userId}
                             onChangeText={(value) => onChangeIdValue(value)}
                         />
                         {data.check_textInputChange ?
@@ -346,7 +363,7 @@ const styles = StyleSheet.create({
     },
     action: {
         flexDirection: 'row',
-        marginTop: 30,
+        marginTop: 23,
         borderBottomWidth: 1,
         borderBottomColor: '#f2f2f2',
         paddingBottom: 3,

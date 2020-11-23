@@ -183,12 +183,10 @@ const HomeScreen = ({navigation}) => {
                             <Animated.Image source={require('../asset/image/menu.png')} style={{opacity:hideButton,marginLeft:10,marginTop:-17}}/>
                         </TouchableOpacity>
                     </>
-                // <Icon.Button name="ios-menu" color={menuButtonColor} size={25} backgroundColor='transparent' underlayColor='transparent' onPress={() => navigation.openDrawer()}></Icon.Button>
             ),
             headerBackground: () => (
                 <Animated.View
                     style={{
-                        // opacity:0,
                         backgroundColor: "white",
                         ...StyleSheet.absoluteFillObject,
                         opacity: headerOpacity,

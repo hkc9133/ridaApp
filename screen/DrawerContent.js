@@ -1,32 +1,20 @@
 import React,{useEffect,useState} from 'react';
 import {View, StyleSheet, TouchableOpacity,ScrollView} from 'react-native';
 import {
-    useTheme,
-    Avatar,
-    Title,
-    Caption,
-    Paragraph,
-    Drawer,
-    Text,
-    TouchableRipple,
-    Switch
+    useTheme
 } from 'react-native-paper';
 import {
-    DrawerContentScrollView,
     DrawerItem
 } from '@react-navigation/drawer';
-import AsyncStorage from '@react-native-community/async-storage';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch, useSelector} from 'react-redux';
 import {initializeCompany} from '../store/company/company';
-import Feather from 'react-native-vector-icons/Feather';
-import CookieManager from '@react-native-community/cookies';
 import Dialog from 'react-native-dialog';
 import {initialize, logout} from '../store/auth/auth';
 import CustomText from '../component/common/CustomText';
+import IOnIcon from 'react-native-vector-icons/Ionicons';
 
-// import{ AuthContext } from '../components/context';
 
 export function DrawerContent(props) {
 
@@ -45,29 +33,15 @@ export function DrawerContent(props) {
 
     },[])
 
-    // useEffect(() => {
-    //     console.log("탐")
-    //     console.log(logoutLoading)
-    //     console.log(auth)
-    //     if(!logoutLoading && auth.logOut.result){
-    //         console.log("초기")
-    //         dispatch(initialize());
-    //     }
-    //
-    // },[auth,logoutLoading])
-
     const changeCompany = async () => {
         try {
             dispatch(initializeCompany());
-            // await AsyncStorage.removeItem('COMPANY_ID');
-
             props.setCompany();
         }
         catch(error) {
             return false;
         }
     }
-    // const { signOut, toggleTheme } = React.useContext(AuthContext);
 
     const logOut = () => {
         dispatch(logout());
@@ -81,15 +55,20 @@ export function DrawerContent(props) {
         <View style={{flex:1,paddingTop:0,height:'90%',backgroundColor:'#fff',borderTopRightRadius:10,borderBottomRightRadius:10}}>
             <View style={styles.userInfoSection}>
                 <View style={{flexDirection:'row',marginTop: 10,alignItems: 'center',justifyContent:'space-between'}}>
-                    <View style={{flex:1}}>
+                    <View style={{flex:1,justifyContent:'center'}}>
                         <CustomText style={[styles.text_header_logo,{color: colors.ridaTheme}]}>RIDA</CustomText>
                     </View>
-                    <View style={{flex:1,flexDirection:'row',justifyContent:'flex-end'}}>
+                    <View style={{flex:1,flexDirection:'row',justifyContent:'flex-end',marginTop:10}}>
+                        <TouchableOpacity onPress={() => {props.navigation.navigate('privacy')}}>
+                            <View style={{backgroundColor:colors.ridaTheme,borderRadius:13.5,marginRight:15,width:27,height:27,justifyContent:'center',alignItems:'center'}}>
+                                <IOnIcon name="ios-person" color={"#ffffff"} size={18}/>
+                            </View>
+                        </TouchableOpacity>
                         <Icon
                             name="cog"
                             color='gray'
                             size={22}
-                            style={{marginRight:20}}
+                            style={{marginRight:15}}
                         />
                         <TouchableOpacity onPress={() => {setIsShowLogOut(true)}}>
                             <Icon
